@@ -1,5 +1,10 @@
 {
   "devDependencies": {
     "jest": "^29.6.0"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "watch": "jest --watchAll"
   }
 }
