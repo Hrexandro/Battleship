@@ -1,12 +1,26 @@
-// Begin your app by creating the Ship factory function.
-// Your ‘ships’ will be objects that include their length, the number of times they’ve been hit and whether or not they’ve been sunk.
-// REMEMBER you only have to test your object’s public interface. Only methods or properties
-//that are used outside of your ‘ship’ object need unit tests.
-// Ships should have a hit() function that increases the number of ‘hits’ in your ship.
-// isSunk() should be a function that calculates it based on their length and the number of ‘hits’.
-
-import { Ship } from '/battleship.js'
+const battleship = require ('./battleship.js')
 
 test('Ship factory function', () => {
-  expect(Ship()).toBe('?????');
+  let newShip = battleship.Ship()
+  expect(newShip.length).toBe(1);
+  expect(newShip.hits).toBe(0);
+  expect(newShip.sunk).toBe(false);
+});
+
+test('Other length ship', () => {
+  expect(battleship.Ship(4).length).toBe(4);
+});
+
+test('Working hit() method', () => {
+  let newShip = battleship.Ship()
+  newShip.hit()
+  expect(newShip.hits).toBe(1);
+  expect(newShip.sunk).toBe(true)
+});
+
+test('bigger ship survives one git', () => {
+  let newShip = battleship.Ship(4)
+  newShip.hit()
+  expect(newShip.hits).toBe(1);
+  expect(newShip.sunk).toBe(false)
 });
