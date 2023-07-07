@@ -32,6 +32,12 @@ test('imports the Gameboard',()=>{
 //to test Gameboard
 //should be a board of coordinates
 
+test('check coordinates',()=>{
+  let newBoard = battleship.Gameboard()
+  expect(newBoard.coordinates[0]).toEqual(["A",1])
+  expect(newBoard.coordinates[newBoard.coordinates.length-1]).toEqual(["J",10])
+})
+
 //should be able to place ships at specific coordinates by calling the ship factory function.
 
 // Gameboards should have a receiveAttack function that takes a pair of coordinates, determines whether or
