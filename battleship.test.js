@@ -1,42 +1,57 @@
-const battleship = require ('./battleship.js')
+const battleship = require("./battleship.js");
 
-test('Ship factory function', () => {
-  let newShip = battleship.Ship()
+test("Ship factory function", () => {
+  let newShip = battleship.Ship();
   expect(newShip.length).toBe(1);
   expect(newShip.hits).toBe(0);
   expect(newShip.sunk).toBe(false);
 });
 
-test('Other length ship', () => {
+test("Other length ship", () => {
   expect(battleship.Ship(4).length).toBe(4);
 });
 
-test('Working hit() method', () => {
-  let newShip = battleship.Ship()
-  newShip.hit()
+test("Working hit() method", () => {
+  let newShip = battleship.Ship();
+  newShip.hit();
   expect(newShip.hits).toBe(1);
-  expect(newShip.sunk).toBe(true)
+  expect(newShip.sunk).toBe(true);
 });
 
-test('bigger ship survives one git', () => {
-  let newShip = battleship.Ship(4)
-  newShip.hit()
+test("bigger ship survives one git", () => {
+  let newShip = battleship.Ship(4);
+  newShip.hit();
   expect(newShip.hits).toBe(1);
-  expect(newShip.sunk).toBe(false)
+  expect(newShip.sunk).toBe(false);
 });
 
-test('imports the Gameboard',()=>{
-  expect(typeof battleship.Gameboard()).toEqual('object')
-})
+test("imports the Gameboard", () => {
+  expect(typeof battleship.Gameboard()).toEqual("object");
+});
 
 //to test Gameboard
 //should be a board of coordinates
 
-test('check coordinates',()=>{
-  let newBoard = battleship.Gameboard()
-  expect(newBoard.coordinates[0]).toEqual(["A",1])
-  expect(newBoard.coordinates[newBoard.coordinates.length-1]).toEqual(["J",10])
-})
+test("check coordinates", () => {
+  let newBoard = battleship.Gameboard();
+  expect(newBoard.fields[0].coordinates).toEqual(["A", 1]);
+  expect(newBoard.fields[newBoard.fields.length - 1].coordinates).toEqual([
+    "J",
+    10,
+  ]);
+});
+///make & check a function for array comparison
+
+//later
+// test("add ship", () => {
+//   let newBoard = battleship.Gameboard();
+//   let newShipCoords = [
+//     ["A", 1],
+//     ["B", 1],
+//   ];
+//   newBoard.addShip(newShipCoords);
+//   expect(newBoard.fields.find(e => (e.coordinates[0][0] === newShipCoords[0][0] && e.coordinates[0][1] === newShipCoords[0][1])).ship).toBe(true);
+// });
 
 //should be able to place ships at specific coordinates by calling the ship factory function.
 

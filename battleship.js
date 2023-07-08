@@ -6,37 +6,51 @@
 // Gameboards should keep track of missed attacks so they can display them properly.
 // Gameboards should be able to report whether or not all of their ships have been sunk.
 
-function Ship(length = 1){
-    return {
-        length,
-        hits: 0,
-        sunk: false,
-        isSunk(){
-            if (this.hits === this.length){
-                this.sunk = true
-            }
-        },
-        hit(){
-            this.hits ++
-            this.isSunk()
-        }
-    }
+function Ship(length = 1) {
+  return {
+    length,
+    hits: 0,
+    sunk: false,
+    isSunk() {
+      if (this.hits === this.length) {
+        this.sunk = true;
+      }
+    },
+    hit() {
+      this.hits++;
+      this.isSunk();
+    },
+  };
 }
 
-function Gameboard(){
-    function createEmptyBoard(){
-        let letters = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-        let boardFields = []
-        for (let i = 1; i < 11; i++){
-            for (let j = 0; j < 10; j++){
-                boardFields.push([letters[j],i ])
-            }
+function Gameboard() {
+  function createEmptyBoard() {
+    let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+    let boardFields = [];
+    for (let i = 1; i < 11; i++) {
+      for (let j = 0; j < 10; j++) {
+        boardFields.push({
+          coordinates: [letters[j], i],
+          ship: false,
+          hit: false,
+        });
+      }
+    }
+    return boardFields;
+  }
+
+  return {
+    fields: createEmptyBoard(),
+    addShip(newShipLocation) {
+      let newShip = Ship(newShipLocation.length);
+      ////
+        for (let i = 0; i < newShipLocation.length; i++){
+            //field with location the same as newShipLocation
+            //assign newShip to its ship parameter
         }
-        return boardFields
-    }
-    return {
-        coordinates: createEmptyBoard()
-    }
+      ////
+    },
+  };
 }
 
 module.exports = { Ship, Gameboard };
