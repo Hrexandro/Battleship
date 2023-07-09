@@ -42,6 +42,14 @@ test("check coordinates", () => {
 });
 ///make & check a function for array comparison
 
+test("identical arrays", () => {
+  expect(battleship.compareArrays(["A", 1], ["A", 1])).toBe(true);
+});
+
+test("different arrays", () => {
+  expect(battleship.compareArrays(["A", 2], ["A", 1])).toBe(false);
+});
+
 //later
 // test("add ship", () => {
 //   let newBoard = battleship.Gameboard();

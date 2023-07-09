@@ -6,6 +6,17 @@
 // Gameboards should keep track of missed attacks so they can display them properly.
 // Gameboards should be able to report whether or not all of their ships have been sunk.
 
+function compareArrays (arrayOne, arrayTwo){
+  for (let i = 0; i <= arrayOne.length; i++){
+    if (arrayOne[i] !== arrayTwo[i]){
+      console.log(arrayOne[i])
+      console.log(arrayTwo[i])
+      return false
+    }
+  }
+  return true
+}
+
 function Ship(length = 1) {
   return {
     length,
@@ -53,4 +64,4 @@ function Gameboard() {
   };
 }
 
-module.exports = { Ship, Gameboard };
+module.exports = { Ship, Gameboard, compareArrays };
