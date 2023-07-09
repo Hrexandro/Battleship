@@ -9,8 +9,6 @@
 function compareArrays (arrayOne, arrayTwo){
   for (let i = 0; i <= arrayOne.length; i++){
     if (arrayOne[i] !== arrayTwo[i]){
-      console.log(arrayOne[i])
-      console.log(arrayTwo[i])
       return false
     }
   }
@@ -55,7 +53,12 @@ function Gameboard() {
     addShip(newShipLocation) {
       let newShip = Ship(newShipLocation.length);
       ////
-        for (let i = 0; i < newShipLocation.length; i++){
+        for (let i = 0, newCoordinatesUsed = 0; i < newShipLocation.length; i++){
+          //console.log(this.fields[i].coordinates)
+          console.log(j)
+          if (compareArrays(this.fields[i].coordinates, newShipCoordinates /* can be up to 4!, make another loop?*/)){
+
+          }
             //field with location the same as newShipLocation
             //assign newShip to its ship parameter
         }

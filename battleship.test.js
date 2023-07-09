@@ -51,15 +51,15 @@ test("different arrays", () => {
 });
 
 //later
-// test("add ship", () => {
-//   let newBoard = battleship.Gameboard();
-//   let newShipCoords = [
-//     ["A", 1],
-//     ["B", 1],
-//   ];
-//   newBoard.addShip(newShipCoords);
-//   expect(newBoard.fields.find(e => (e.coordinates[0][0] === newShipCoords[0][0] && e.coordinates[0][1] === newShipCoords[0][1])).ship).toBe(true);
-// });
+test("add ship", () => {
+  let newBoard = battleship.Gameboard();
+  let newShipCoords = [
+    ["A", 1],
+    ["B", 1],
+  ];
+  newBoard.addShip(newShipCoords);
+  expect(newBoard.fields.find(e => (e.coordinates[0][0] === newShipCoords[0][0] && e.coordinates[0][1] === newShipCoords[0][1])).ship).toBe(true);
+});
 
 //should be able to place ships at specific coordinates by calling the ship factory function.
 
