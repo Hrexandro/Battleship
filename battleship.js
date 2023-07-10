@@ -6,15 +6,6 @@
 // Gameboards should keep track of missed attacks so they can display them properly.
 // Gameboards should be able to report whether or not all of their ships have been sunk.
 
-function compareArrays (arrayOne, arrayTwo){
-  for (let i = 0; i <= arrayOne.length; i++){
-    if (arrayOne[i] !== arrayTwo[i]){
-      return false
-    }
-  }
-  return true
-}
-
 function Ship(length = 1) {
   return {
     length,
@@ -39,7 +30,8 @@ function Gameboard() {
     for (let i = 1; i < 11; i++) {
       for (let j = 0; j < 10; j++) {
         boardFields.push({
-          coordinates: [letters[j], i],
+          X: letters[j],
+          Y: i,
           ship: false,
           hit: false,
         });
@@ -50,21 +42,21 @@ function Gameboard() {
 
   return {
     fields: createEmptyBoard(),
-    addShip(newShipLocation) {
-      let newShip = Ship(newShipLocation.length);
-      ////
-        for (let i = 0, newCoordinatesUsed = 0; i < newShipLocation.length; i++){
-          //console.log(this.fields[i].coordinates)
-          console.log(j)
-          if (compareArrays(this.fields[i].coordinates, newShipCoordinates /* can be up to 4!, make another loop?*/)){
+    addShip(... args) {
+      let newShip = Ship(args.length);
+      let fieldsToFill = args
 
+      for (let i = 0; i < this.fields.length; i ++){
+        for (let j = 0; j < fieldsToFill.length; j++){
+          if ((this.fields.X === fieldsToFill[j][0]) && (this.fields.Y === fieldsToFill[j][1])){
+            this.fields.ship = newShip
+            fieldsToFill.splice(i, 1)
+            break
           }
-            //field with location the same as newShipLocation
-            //assign newShip to its ship parameter
         }
-      ////
+      }
     },
   };
 }
 
-module.exports = { Ship, Gameboard, compareArrays };
+module.exports = { Ship, Gameboard };

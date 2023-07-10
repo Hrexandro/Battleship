@@ -29,26 +29,15 @@ test("imports the Gameboard", () => {
   expect(typeof battleship.Gameboard()).toEqual("object");
 });
 
-//to test Gameboard
-//should be a board of coordinates
 
 test("check coordinates", () => {
   let newBoard = battleship.Gameboard();
-  expect(newBoard.fields[0].coordinates).toEqual(["A", 1]);
-  expect(newBoard.fields[newBoard.fields.length - 1].coordinates).toEqual([
-    "J",
-    10,
-  ]);
-});
-///make & check a function for array comparison
-
-test("identical arrays", () => {
-  expect(battleship.compareArrays(["A", 1], ["A", 1])).toBe(true);
+  expect(newBoard.fields[0].X).toEqual("A");
+  expect(newBoard.fields[0].Y).toEqual(1);
+  expect(newBoard.fields[newBoard.fields.length - 1].X).toEqual("J");
+  expect(newBoard.fields[newBoard.fields.length - 1].Y).toEqual(10);
 });
 
-test("different arrays", () => {
-  expect(battleship.compareArrays(["A", 2], ["A", 1])).toBe(false);
-});
 
 //later
 test("add ship", () => {
@@ -58,7 +47,9 @@ test("add ship", () => {
     ["B", 1],
   ];
   newBoard.addShip(newShipCoords);
-  expect(newBoard.fields.find(e => (e.coordinates[0][0] === newShipCoords[0][0] && e.coordinates[0][1] === newShipCoords[0][1])).ship).toBe(true);
+
+  expect(newBoard.fields.find(e => (e.X === newShipCoords[0][0]) &&(e.Y === newShipCoords[0][1])).ship).toBeTruthy()
+
 });
 
 //should be able to place ships at specific coordinates by calling the ship factory function.
