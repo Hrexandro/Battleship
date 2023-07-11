@@ -39,7 +39,7 @@ test("check coordinates", () => {
 });
 
 
-//later
+//should be able to place ships at specific coordinates by calling the ship factory function.
 test("add ship", () => {
   let newBoard = battleship.Gameboard();
   let newShipCoords = [
@@ -51,7 +51,15 @@ test("add ship", () => {
 
 });
 
-//should be able to place ships at specific coordinates by calling the ship factory function.
+//function for finding fields?
+
+test("receive attack function - sinking of one mast ship", ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip("A", 1);
+  newBoard.receiveAttack("A", 1)
+  expect(newBoard.fields.find(e => e.X === "A" && e.Y === 1).ship.sunk).toBe(true)
+})
+
 
 // Gameboards should have a receiveAttack function that takes a pair of coordinates, determines whether or
 // not the attack hit a ship and then sends the ‘hit’ function to the correct ship, or records the coordinates of the missed shot.
