@@ -46,8 +46,7 @@ test("add ship", () => {
     ["A", 1],
     ["B", 1],
   ];
-  newBoard.addShip(newShipCoords);
-
+  newBoard.addShip(newShipCoords[0], newShipCoords[1]);
   expect(newBoard.fields.find(e => (e.X === newShipCoords[0][0]) &&(e.Y === newShipCoords[0][1])).ship).toBeTruthy()
 
 });

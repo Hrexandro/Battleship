@@ -48,8 +48,8 @@ function Gameboard() {
 
       for (let i = 0; i < this.fields.length; i ++){
         for (let j = 0; j < fieldsToFill.length; j++){
-          if ((this.fields.X === fieldsToFill[j][0]) && (this.fields.Y === fieldsToFill[j][1])){
-            this.fields.ship = newShip
+          if ((this.fields[i].X === fieldsToFill[j][0]) && (this.fields[i].Y === fieldsToFill[j][1])){
+            this.fields[i].ship = newShip
             fieldsToFill.splice(i, 1)
             break
           }
