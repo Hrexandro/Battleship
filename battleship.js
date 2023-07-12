@@ -46,7 +46,7 @@ function Gameboard() {
       let newShip = Ship(args.length);
       let fieldsToFill = args
 
-      for (let i = 0; i < this.fields.length; i ++){
+      for (let i = 0; i < this.fields.length; i++){
         for (let j = 0; j < fieldsToFill.length; j++){
           if ((this.fields[i].X === fieldsToFill[j][0]) && (this.fields[i].Y === fieldsToFill[j][1])){
             this.fields[i].ship = newShip
@@ -56,7 +56,20 @@ function Gameboard() {
         }
       }
     },
+    receiveAttack(targetX, targetY){
+      let attackedField = findField(targetX, targetY, this)
+      if (attackedField.ship){
+        attackedField.ship.hit()
+      }
+      attackedField.hit = true
+    }
   };
 }
+
+
+function findField(coordX, coordY, board){
+  return board.fields.find(e=>(e.X === coordX) &&(e.Y === coordY))
+}
+
 
 module.exports = { Ship, Gameboard };

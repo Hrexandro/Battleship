@@ -40,26 +40,53 @@ test("check coordinates", () => {
 
 
 //should be able to place ships at specific coordinates by calling the ship factory function.
-test("add ship", () => {
+test("add ship one mast ship", () => {
+  let newBoard = battleship.Gameboard();
+  let newShipCoords = ["A", 1]
+  newBoard.addShip(newShipCoords);
+  expect(newBoard.fields.find(e => (e.X === newShipCoords[0]) &&(e.Y === newShipCoords[1])).ship).toBeTruthy()
+
+});
+
+test("add ship two mast ship", () => {
   let newBoard = battleship.Gameboard();
   let newShipCoords = [
     ["A", 1],
-    ["B", 1],
+    ["B", 1]
   ];
   newBoard.addShip(newShipCoords[0], newShipCoords[1]);
   expect(newBoard.fields.find(e => (e.X === newShipCoords[0][0]) &&(e.Y === newShipCoords[0][1])).ship).toBeTruthy()
 
 });
 
-//function for finding fields?
+
+
 
 test("receive attack function - sinking of one mast ship", ()=>{
   let newBoard = battleship.Gameboard();
-  newBoard.addShip("A", 1);
+  newBoard.addShip(["A", 1]);
+  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship.sunk).toBe(false)
   newBoard.receiveAttack("A", 1)
-  expect(newBoard.fields.find(e => e.X === "A" && e.Y === 1).ship.sunk).toBe(true)
+  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship.sunk).toBe(true)
 })
 
+test("receive attack function - sinking of two mast ship", ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip(["A", 1], ["B", 1]);
+  newBoard.receiveAttack("A", 1)
+  newBoard.receiveAttack("B", 1)
+  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship.sunk).toBe(true)
+})
+
+
+test("receive attack function - marking hit field", ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.receiveAttack("A", 1)
+  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship).toBe(false)
+  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).hit).toBe(true)
+})
+
+//switch the finds to a function
 
 // Gameboards should have a receiveAttack function that takes a pair of coordinates, determines whether or
 // not the attack hit a ship and then sends the ‘hit’ function to the correct ship, or records the coordinates of the missed shot.
