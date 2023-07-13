@@ -44,7 +44,7 @@ test("add ship one mast ship", () => {
   let newBoard = battleship.Gameboard();
   let newShipCoords = ["A", 1]
   newBoard.addShip(newShipCoords);
-  expect(newBoard.fields.find(e => (e.X === newShipCoords[0]) &&(e.Y === newShipCoords[1])).ship).toBeTruthy()
+  expect(battleship.findField(newShipCoords[0], newShipCoords[1], newBoard).ship).toBeTruthy()
 
 });
 
@@ -55,7 +55,7 @@ test("add ship two mast ship", () => {
     ["B", 1]
   ];
   newBoard.addShip(newShipCoords[0], newShipCoords[1]);
-  expect(newBoard.fields.find(e => (e.X === newShipCoords[0][0]) &&(e.Y === newShipCoords[0][1])).ship).toBeTruthy()
+  expect(battleship.findField(newShipCoords[0][0], newShipCoords[0][1], newBoard).ship).toBeTruthy()
 
 });
 
@@ -65,9 +65,9 @@ test("add ship two mast ship", () => {
 test("receive attack function - sinking of one mast ship", ()=>{
   let newBoard = battleship.Gameboard();
   newBoard.addShip(["A", 1]);
-  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship.sunk).toBe(false)
+  expect(battleship.findField("A", 1, newBoard).ship.sunk).toBe(false)
   newBoard.receiveAttack("A", 1)
-  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship.sunk).toBe(true)
+  expect(battleship.findField("A", 1, newBoard).ship.sunk).toBe(true)
 })
 
 test("receive attack function - sinking of two mast ship", ()=>{
@@ -75,15 +75,15 @@ test("receive attack function - sinking of two mast ship", ()=>{
   newBoard.addShip(["A", 1], ["B", 1]);
   newBoard.receiveAttack("A", 1)
   newBoard.receiveAttack("B", 1)
-  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship.sunk).toBe(true)
+  expect(battleship.findField("A", 1, newBoard).ship.sunk).toBe(true)
 })
 
 
 test("receive attack function - marking hit field", ()=>{
   let newBoard = battleship.Gameboard();
   newBoard.receiveAttack("A", 1)
-  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).ship).toBe(false)
-  expect(newBoard.fields.find(e => (e.X === "A") && (e.Y === 1)).hit).toBe(true)
+  expect(battleship.findField("A", 1, newBoard).ship).toBe(false)
+  expect(battleship.findField("A", 1, newBoard).hit).toBe(true)
 })
 
 //switch the finds to a function

@@ -72,4 +72,4 @@ function findField(coordX, coordY, board){
 }
 
 
-module.exports = { Ship, Gameboard };
+module.exports = { Ship, Gameboard, findField };
