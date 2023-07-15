@@ -42,6 +42,7 @@ function Gameboard() {
 
   return {
     fields: createEmptyBoard(),
+    gameOver: false,
     addShip(... args) {
       let newShip = Ship(args.length);
       let fieldsToFill = args
@@ -62,6 +63,28 @@ function Gameboard() {
         attackedField.ship.hit()
       }
       attackedField.hit = true
+      if (this.gameOverCheck){
+        this.gameOver = true
+      }
+    },
+    gameOverCheck(){
+      let unsunkShips = []
+      for (let field in this.fields){
+        if (this.fields[field].ship){
+          console.log('found ship')
+          if (!this.fields[field].ship.sunk){
+            console.log(this.fields[field].ship)
+            unsunkShips.push(this.fields[field].ship)
+          }
+        }
+      }
+      if (unsunkShips.length < 1){
+        console.log(unsunkShips)
+        return true
+      } else {
+        return false
+      }
+      
     }
   };
 }
