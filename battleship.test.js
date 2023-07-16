@@ -93,9 +93,8 @@ test('all ships have not been sunk', ()=>{
   let newBoard = battleship.Gameboard();
   newBoard.addShip(["A", 1], ["B", 1]);
   newBoard.receiveAttack("A", 1)
-  newBoard.receiveAttack("B", 1)
   expect(newBoard.gameOverCheck()).toBe(false)
-  //expect(newBoard.gameOver).toBe(false)
+  expect(newBoard.gameOver).toBe(false)
 })
 
 test('all ships have been sunk', ()=>{
@@ -104,5 +103,5 @@ test('all ships have been sunk', ()=>{
   newBoard.receiveAttack("A", 1)
   newBoard.receiveAttack("B", 1)
   expect(newBoard.gameOverCheck()).toBe(true)
-  //expect(newBoard.gameOver).toBe(true)
+  expect(newBoard.gameOver).toBe(true)
 })

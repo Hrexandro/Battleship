@@ -1,10 +1,11 @@
-// Create Gameboard factory.
+// Create Player.
+// Players can take turns playing the game by attacking the enemy Gameboard.
+// The game is played against the computer, so make the ‘computer’ 
+// capable of making random plays. The AI does not have to be smart, 
+// but it should know whether or not a given move is legal. 
+// (i.e. it shouldn’t shoot the same coordinate twice).
 
-// Gameboards should be able to place ships at specific coordinates by calling the ship factory function.
-// Gameboards should have a receiveAttack function that takes a pair of coordinates, determines whether or
-// not the attack hit a ship and then sends the ‘hit’ function to the correct ship, or records the coordinates of the missed shot.
-// Gameboards should keep track of missed attacks so they can display them properly.
-// Gameboards should be able to report whether or not all of their ships have been sunk.
+
 
 function Ship(length = 1) {
   return {
@@ -63,7 +64,7 @@ function Gameboard() {
         attackedField.ship.hit()
       }
       attackedField.hit = true
-      if (this.gameOverCheck){
+      if (this.gameOverCheck()){
         this.gameOver = true
       }
     },
@@ -71,15 +72,12 @@ function Gameboard() {
       let unsunkShips = []
       for (let field in this.fields){
         if (this.fields[field].ship){
-          console.log('found ship')
           if (!this.fields[field].ship.sunk){
-            console.log(this.fields[field].ship)
             unsunkShips.push(this.fields[field].ship)
           }
         }
       }
       if (unsunkShips.length < 1){
-        console.log(unsunkShips)
         return true
       } else {
         return false
