@@ -5,7 +5,7 @@
 // but it should know whether or not a given move is legal. 
 // (i.e. it shouldn’t shoot the same coordinate twice).
 
-
+let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
 function Ship(length = 1) {
   return {
@@ -26,7 +26,7 @@ function Ship(length = 1) {
 
 function Gameboard() {
   function createEmptyBoard() {
-    let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+    //let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
     let boardFields = [];
     for (let i = 1; i < 11; i++) {
       for (let j = 0; j < 10; j++) {
@@ -83,14 +83,49 @@ function Gameboard() {
         return false
       }
       
+    },
+    checkFieldHitStatus(X, Y){
+      if (findField(X, Y, this).hit){
+        return true
+      } else {
+        return false
+      }
     }
   };
 }
 
 
 function findField(coordX, coordY, board){
-  return board.fields.find(e=>(e.X === coordX) &&(e.Y === coordY))
+  return board.fields.find(e => (e.X === coordX) && (e.Y === coordY))
 }
 
+// Create Player.
+// Players can take turns playing the game by attacking the enemy Gameboard.
+// The game is played against the computer, so make the ‘computer’ 
+// capable of making random plays. The AI does not have to be smart, 
+// but it should know whether or not a given move is legal. 
+// (i.e. it shouldn’t shoot the same coordinate twice).
 
-module.exports = { Ship, Gameboard, findField };
+function Player(type = "human"){
+  return {
+    type,
+    attackBoard(board, X, Y){
+      if (!findField(X, Y, board).hit){
+        board.receiveAttack(X, Y)
+      }
+      else {
+        return false
+      }
+    },
+    randomAttack(board){
+      let attackDone = false
+      while (!attackDone){
+        //finish this
+      }
+      //board.checkFieldHitStatus(X, Y)
+      
+    }
+  }
+
+}
+module.exports = { Ship, Gameboard, findField, Player };

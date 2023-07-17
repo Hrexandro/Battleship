@@ -105,3 +105,66 @@ test('all ships have been sunk', ()=>{
   expect(newBoard.gameOverCheck()).toBe(true)
   expect(newBoard.gameOver).toBe(true)
 })
+
+test('checking field status on the gameboard',()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip(["A", 1], ["B", 1]);
+  newBoard.receiveAttack("A", 1)
+
+  expect(newBoard.checkFieldHitStatus("A", 1)).toBe(true)
+  expect(newBoard.checkFieldHitStatus("B", 2)).toBe(false)
+  expect(newBoard.checkFieldHitStatus("A", 2)).toBe(false)
+
+  
+})
+
+// Create Player.
+// Players can take turns playing the game by attacking the enemy Gameboard.
+// The game is played against the computer, so make the ‘computer’ 
+// capable of making random plays. The AI does not have to be smart, 
+// but it should know whether or not a given move is legal. 
+// (i.e. it shouldn’t shoot the same coordinate twice).
+
+test('human player attacks field', ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip(["A", 1]);
+
+  let humanPlayer = battleship.Player()
+
+  humanPlayer.attackBoard(newBoard, "A", 1)
+
+  expect(battleship.findField("A", 1, newBoard).hit).toBe(true)
+  expect(newBoard.gameOverCheck()).toBe(true)
+  expect(newBoard.gameOver).toBe(true)
+})
+
+test('attacking the same field twice is rejected', ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip(["A", 1]);
+
+  let humanPlayer = battleship.Player()
+
+  humanPlayer.attackBoard(newBoard, "A", 1)
+
+  expect(humanPlayer.attackBoard(newBoard, "A", 1)).toBe(false)
+  expect(battleship.findField("A", 1, newBoard).hit).toBe(true)
+})
+
+test('computer player attacks a random field once', ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip(["A", 1]);
+
+  let computerPlayer = battleship.Player("computer")
+
+  computerPlayer.randomAttack(newBoard)
+
+  let attackedFields = []
+
+  for (let field in newBoard.fields){
+    if (newBoard.fields[field].hit){
+      attackedFields.push(newBoard.fields[field])
+    }
+  }
+  expect(attackedFields.length).toBe(1)
+})
+
