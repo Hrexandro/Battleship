@@ -117,21 +117,23 @@ function Player(type = "human"){
         return false
       }
     },
-    //rewrite random attack because it's going to be inefficient if most fields already have been hit
-    //solution: make a list of fields that have not been attacked yet
-    //then attack random one of these fields
+    // randomAttack(board){
+    //   let attackDone = false
+    //   while (!attackDone){
+    //     let XTarget = letters[Math.floor(Math.random() * 10)]
+    //     let YTarget = Math.floor(Math.random() * 10) + 1
+    //     if (!board.checkFieldHitStatus(XTarget, YTarget)){
+    //       this.attackBoard(board, XTarget, YTarget)
+    //       attackDone = true
+    //     }
+    //   }
+    // }
     randomAttack(board){
-      let attackDone = false
-      while (!attackDone){
-        let XTarget = letters[Math.floor(Math.random() * 10)]
-        let YTarget = Math.floor(Math.random() * 10) + 1
-        if (!board.checkFieldHitStatus(XTarget, YTarget)){
-          this.attackBoard(board, XTarget, YTarget)
-          attackDone = true
-        }
-      }
-      
+      let fieldsNotAttackedYet = board.fields.filter(f => f.hit === false)
+      let target = fieldsNotAttackedYet[Math.floor(Math.random()*fieldsNotAttackedYet.length)]
+      this.attackBoard(board, target.X, target.Y) 
     }
+
   }
 
 }

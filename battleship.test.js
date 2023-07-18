@@ -184,7 +184,6 @@ test.only('computer player 99 fields without repeating', ()=>{
       attackedFields.push(newBoard.fields[field])
     }
   }
-  console.log(attackedFields)
   expect(attackedFields.length).toBe(99)
 })
 
