@@ -168,3 +168,26 @@ test('computer player attacks a random field once', ()=>{
   expect(attackedFields.length).toBe(1)
 })
 
+test.only('computer player 99 fields without repeating', ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip(["A", 1]);
+
+  let computerPlayer = battleship.Player("computer")
+  for (let i = 1; i < 100; i++){
+    computerPlayer.randomAttack(newBoard)
+  }
+
+  let attackedFields = []
+
+  for (let field in newBoard.fields){
+    if (newBoard.fields[field].hit){
+      attackedFields.push(newBoard.fields[field])
+    }
+  }
+  console.log(attackedFields)
+  expect(attackedFields.length).toBe(99)
+})
+
+//test what happens if no more fields to attack?
+
+
