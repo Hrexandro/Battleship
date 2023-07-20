@@ -1,9 +1,16 @@
-// Create Player.
-// Players can take turns playing the game by attacking the enemy Gameboard.
-// The game is played against the computer, so make the ‘computer’ 
-// capable of making random plays. The AI does not have to be smart, 
-// but it should know whether or not a given move is legal. 
-// (i.e. it shouldn’t shoot the same coordinate twice).
+// Create the main game loop and a module for DOM interaction.
+// At this point it is appropriate to begin crafting your User Interface.
+// The game loop should set up a new game by creating Players and Gameboards.
+// For now just populate each Gameboard with predetermined coordinates.
+// You can implement a system for allowing players to place their ships later.
+// We’ll leave the HTML implementation up to you for now, but you should display both the player’s
+// boards and render them using information from the Gameboard class.
+// You need methods to render the gameboards and to take user input for attacking.
+// For attacks, let the user click on a coordinate in the enemy Gameboard.
+// The game loop should step through the game turn by turn using only methods from other objects.
+// If at any point you are tempted to write a new function inside the game loop, step back and figure out which class or module that function should belong to.
+// Create conditions so that the game ends once one player’s ships have all been sunk.
+// This function is appropriate for the Game module.
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
@@ -26,7 +33,6 @@ function Ship(length = 1) {
 
 function Gameboard() {
   function createEmptyBoard() {
-    //let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
     let boardFields = [];
     for (let i = 1; i < 11; i++) {
       for (let j = 0; j < 10; j++) {
@@ -99,14 +105,7 @@ function findField(coordX, coordY, board){
   return board.fields.find(e => (e.X === coordX) && (e.Y === coordY))
 }
 
-// Create Player.
-// Players can take turns playing the game by attacking the enemy Gameboard.
-// The game is played against the computer, so make the ‘computer’ 
-// capable of making random plays. The AI does not have to be smart, 
-// but it should know whether or not a given move is legal. 
-// (i.e. it shouldn’t shoot the same coordinate twice).
-
-function Player(type = "human"){
+function Player(type = "human"){//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
   return {
     type,
     attackBoard(board, X, Y){
@@ -117,21 +116,14 @@ function Player(type = "human"){
         return false
       }
     },
-    // randomAttack(board){
-    //   let attackDone = false
-    //   while (!attackDone){
-    //     let XTarget = letters[Math.floor(Math.random() * 10)]
-    //     let YTarget = Math.floor(Math.random() * 10) + 1
-    //     if (!board.checkFieldHitStatus(XTarget, YTarget)){
-    //       this.attackBoard(board, XTarget, YTarget)
-    //       attackDone = true
-    //     }
-    //   }
-    // }
     randomAttack(board){
       let fieldsNotAttackedYet = board.fields.filter(f => f.hit === false)
-      let target = fieldsNotAttackedYet[Math.floor(Math.random()*fieldsNotAttackedYet.length)]
-      this.attackBoard(board, target.X, target.Y) 
+      if (fieldsNotAttackedYet.length !== 0){
+        let target = fieldsNotAttackedYet[Math.floor(Math.random()*fieldsNotAttackedYet.length)]
+        this.attackBoard(board, target.X, target.Y) 
+      } else {
+        return
+      }
     }
 
   }

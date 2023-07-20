@@ -39,7 +39,6 @@ test("check coordinates", () => {
 });
 
 
-//should be able to place ships at specific coordinates by calling the ship factory function.
 test("add ship one mast ship", () => {
   let newBoard = battleship.Gameboard();
   let newShipCoords = ["A", 1]
@@ -86,9 +85,6 @@ test("receive attack function - marking hit field", ()=>{
   expect(battleship.findField("A", 1, newBoard).hit).toBe(true)
 })
 
-// Gameboards should be able to report whether or not all of their ships have been sunk.
-//do this next
-
 test('all ships have not been sunk', ()=>{
   let newBoard = battleship.Gameboard();
   newBoard.addShip(["A", 1], ["B", 1]);
@@ -118,12 +114,6 @@ test('checking field status on the gameboard',()=>{
   
 })
 
-// Create Player.
-// Players can take turns playing the game by attacking the enemy Gameboard.
-// The game is played against the computer, so make the ‘computer’ 
-// capable of making random plays. The AI does not have to be smart, 
-// but it should know whether or not a given move is legal. 
-// (i.e. it shouldn’t shoot the same coordinate twice).
 
 test('human player attacks field', ()=>{
   let newBoard = battleship.Gameboard();
@@ -168,7 +158,7 @@ test('computer player attacks a random field once', ()=>{
   expect(attackedFields.length).toBe(1)
 })
 
-test.only('computer player 99 fields without repeating', ()=>{
+test('computer player 99 fields without repeating', ()=>{
   let newBoard = battleship.Gameboard();
   newBoard.addShip(["A", 1]);
 
@@ -187,6 +177,24 @@ test.only('computer player 99 fields without repeating', ()=>{
   expect(attackedFields.length).toBe(99)
 })
 
-//test what happens if no more fields to attack?
+test('try attacking more then 100 fields', ()=>{
+  let newBoard = battleship.Gameboard();
+  newBoard.addShip(["A", 1]);
+
+  let computerPlayer = battleship.Player("computer")
+  for (let i = 1; i <= 101; i++){
+    computerPlayer.randomAttack(newBoard)
+  }
+
+  let attackedFields = []
+
+  for (let field in newBoard.fields){
+    if (newBoard.fields[field].hit){
+      attackedFields.push(newBoard.fields[field])
+    }
+  }
+  expect(attackedFields.length).toBe(100)
+  expect(newBoard.gameOver).toBe(true)
+})
 
 
