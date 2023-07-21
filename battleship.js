@@ -129,4 +129,22 @@ function Player(type = "human"){//later add intelligent target picking, i.e. try
   }
 
 }
-module.exports = { Ship, Gameboard, findField, Player };
+//Create boards for both players
+//randomly put correct number of ships on board
+//they cannot touch
+
+//!!! fields around sunk ship should count as hit
+
+//players take turns
+
+//wiktory
+
+const game = (() => {
+  //const fun = (a, b) => a + b;
+
+  return {
+    //fun
+  };
+})();
+
+module.exports = { Ship, Gameboard, findField, Player, game };

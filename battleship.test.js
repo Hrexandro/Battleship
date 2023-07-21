@@ -197,4 +197,20 @@ test('try attacking more then 100 fields', ()=>{
   expect(newBoard.gameOver).toBe(true)
 })
 
+//preliminary
+test('correct number of ships is placed on board', ()=>{
+  let boardPlayerOne = battleship.game.createBoardPlayerOne()
+  let boardPlayerTwo = battleship.game.createBoardPlayerOne()
+
+  function checkNumberOfShipsOfParticularSize(board, size){
+    let shipsFound = []
+    // iterate through board.fields, if field has ship of size
+    //give it an ordinal, so that you can avoid duplicates, and add to ships found 
+    //then return length
+
+  }
+  //use this function for all required ship sizes
+
+})
+
 
