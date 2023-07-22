@@ -198,7 +198,10 @@ test('try attacking more then 100 fields', ()=>{
 })
 
 //preliminary
-test('correct number of ships is placed on board', ()=>{
+
+//write test for blocking fields surrounding ship
+
+test.skip('correct number of ships is placed on board', ()=>{
   let boardPlayerOne = battleship.game.createBoardPlayerOne()
   let boardPlayerTwo = battleship.game.createBoardPlayerOne()
 

@@ -41,6 +41,7 @@ function Gameboard() {
           Y: i,
           ship: false,
           hit: false,
+          blocked: false
         });
       }
     }
@@ -54,10 +55,25 @@ function Gameboard() {
       let newShip = Ship(args.length);
       let fieldsToFill = args
 
+      //check if fields are blocked
+      for (let i = 0; i < fieldsToFill.length; i++){
+        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked){
+          throw "addShip - Invalid field"
+        }
+      }
+
       for (let i = 0; i < this.fields.length; i++){
         for (let j = 0; j < fieldsToFill.length; j++){
           if ((this.fields[i].X === fieldsToFill[j][0]) && (this.fields[i].Y === fieldsToFill[j][1])){
             this.fields[i].ship = newShip
+            this.fields[i].blocked = true
+
+            //block fields with the same X and -1 and +1 Y
+            //block fields with +1 X and -1, the same, and +1 Y
+            //block fields with -1 X and -1, the same, and +1 Y
+
+            //write a test for this
+
             fieldsToFill.splice(i, 1)
             break
           }
@@ -140,10 +156,11 @@ function Player(type = "human"){//later add intelligent target picking, i.e. try
 //wiktory
 
 const game = (() => {
-  //const fun = (a, b) => a + b;
+  //let boardPlayerOne = Gameboard.createEmptyBoard()
+
 
   return {
-    //fun
+    //boardPlayerOne
   };
 })();
 
