@@ -200,6 +200,32 @@ test('try attacking more then 100 fields', ()=>{
 //preliminary
 
 //write test for blocking fields surrounding ship
+test.only('fields surrounding ship are all blocked', ()=>{
+  let newBoard = battleship.Gameboard();
+  let newShipCoords = ["D", 4]
+  newBoard.addShip(newShipCoords);
+
+  let blockedFields = []
+
+  newBoard.fields.forEach((field) =>{
+    if (field.blocked){
+      blockedFields.push(field.X + field.Y)
+    }
+  })
+  console.log(blockedFields)
+  expect(blockedFields.length).toBe(9)
+  expect(blockedFields.includes("C3")).toBe(true)
+  expect(blockedFields.includes("C4")).toBe(true)
+  expect(blockedFields.includes("C5")).toBe(true)
+  expect(blockedFields.includes("D3")).toBe(true)
+  expect(blockedFields.includes("D4")).toBe(true)
+  expect(blockedFields.includes("D5")).toBe(true)
+  expect(blockedFields.includes("E3")).toBe(true)
+  expect(blockedFields.includes("E4")).toBe(true)
+  expect(blockedFields.includes("E5")).toBe(true)
+
+
+})
 
 test.skip('correct number of ships is placed on board', ()=>{
   let boardPlayerOne = battleship.game.createBoardPlayerOne()

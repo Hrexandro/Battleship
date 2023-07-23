@@ -67,6 +67,15 @@ function Gameboard() {
           if ((this.fields[i].X === fieldsToFill[j][0]) && (this.fields[i].Y === fieldsToFill[j][1])){
             this.fields[i].ship = newShip
             this.fields[i].blocked = true
+            let currentX = this.fields[i].X
+            let currentY = this.fields[i].Y
+
+            function blockSurroundingFields(Xmodifier, Ymodifier){
+              //finish this
+            }
+
+            findField(currentX, currentY+1, this).blocked = true
+            //console.log(findField(currentX, currentY+1, this))
 
             //block fields with the same X and -1 and +1 Y
             //block fields with +1 X and -1, the same, and +1 Y
