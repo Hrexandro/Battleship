@@ -70,18 +70,29 @@ function Gameboard() {
             let currentX = this.fields[i].X
             let currentY = this.fields[i].Y
 
+            let board = this
+
             function blockSurroundingFields(Xmodifier, Ymodifier){
-              //finish this
+              let XtoBeBlocked = letters[letters.findIndex(e => e === currentX) + Xmodifier]
+              if (XtoBeBlocked){
+                let YtoBeBlocked = currentY + Ymodifier
+  
+                if ((YtoBeBlocked < 11)&&(YtoBeBlocked > 0)){
+                  findField(XtoBeBlocked, YtoBeBlocked, board).blocked = true
+                }
+              }
             }
 
-            findField(currentX, currentY+1, this).blocked = true
-            //console.log(findField(currentX, currentY+1, this))
+            blockSurroundingFields(-1, -1)
+            blockSurroundingFields(-1, 0)
+            blockSurroundingFields(-1, 1)
 
-            //block fields with the same X and -1 and +1 Y
-            //block fields with +1 X and -1, the same, and +1 Y
-            //block fields with -1 X and -1, the same, and +1 Y
+            blockSurroundingFields(0, -1)
+            blockSurroundingFields(0, 1)
 
-            //write a test for this
+            blockSurroundingFields(1, -1)
+            blockSurroundingFields(1, 0)
+            blockSurroundingFields(1, 1)
 
             fieldsToFill.splice(i, 1)
             break
