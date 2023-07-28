@@ -51,7 +51,7 @@ function Gameboard() {
   return {
     fields: createEmptyBoard(),
     gameOver: false,
-    addShip(... args) {
+    addShip(... args) {//ex. (["A", 1], ["B", 1])
       let newShip = Ship(args.length);
       let fieldsToFill = args
 
@@ -99,6 +99,51 @@ function Gameboard() {
           }
         }
       }
+    },
+    placeShipRandomly(size){
+
+      let attemptedStarterFields = []
+      let board = this
+
+      function attemptPlacing(){
+        let coordsToFill = []
+
+        //let randomField = this.fields[Math.floor(Math.random()*this.fields.length)]
+        coordsToFill.push([randomField.X, randomField.Y])
+
+        let nearbyFields = []
+
+        let Xup = letters[letters.findIndex(e => e === randomField.X) + 1]
+        let Xdown = letters[letters.findIndex(e => e === randomField.X) - 1]
+        let Yup = randomField.Y + 1
+        let Ydown = randomField.Y - 1
+        //also check if the field is not blocked before pushing
+        if (letters.includes(Xup)){
+          nearbyFields.push([Xup, randomField.Y])
+        }
+        if (letters.includes(Xdown)){
+          nearbyFields.push([Xdown, randomField.Y])
+        }
+        if (Yup < 10){
+          nearbyFields.push([randomField.X, Yup])
+        }
+        if (Ydown > 0){
+          nearbyFields.push([randomField.X, Ydown])
+        }
+        //pick random nearbyField to add to coordsToFill
+        //continue the same path, up or down for X or Y
+        //for as long as size requires
+        //recursion?
+        //if nearbyFields are empty for particular field, retry on a different one
+        //keep track of checked combinations?
+        //if none is possible - retry whole function
+        //if too many retries fail (81) = throw error
+  
+        //place ships //ex. addShip(["A", 1], ["B", 1])
+
+      }
+      attemptPlacing()
+
     },
     receiveAttack(targetX, targetY){
       let attackedField = findField(targetX, targetY, this)

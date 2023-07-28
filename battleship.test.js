@@ -222,12 +222,37 @@ test('fields surrounding ship are all blocked', ()=>{
 
 })
 
-test.only('placing ship on blocked field is not allowed', ()=>{
+test('placing ship on blocked field is not allowed', ()=>{
   let newBoard = battleship.Gameboard();
   newBoard.addShip(["D", 4]);
-
   expect(()=>{newBoard.addShip(["D", 5])}).toThrowError("addShip - Invalid field")
 })
+
+test.only("place two mast ship randomly", () => {
+  let newBoard = battleship.Gameboard();
+
+  newBoard.placeShipRandomly(2)
+
+  let blockedFields = []
+
+  newBoard.fields.forEach((field) =>{
+    if (field.blocked){
+      blockedFields.push(field.X + field.Y)
+    }
+  })
+  expect(blockedFields.length).toBe(12)
+
+  let fieldsWithShips = []
+
+  newBoard.fields.forEach((field) =>{
+    if (field.ship){
+      fieldsWithShips.push(field.X + field.Y)
+    }
+  })
+
+  expect(fieldsWithShips.length).toBe(2)
+
+});
 
 test.skip('correct number of ships is placed on board', ()=>{
   let boardPlayerOne = battleship.game.createBoardPlayerOne()
