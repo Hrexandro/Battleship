@@ -229,4 +229,17 @@ const game = (() => {
   };
 })();
 
+
+const DOMManagement = (() => {
+  const computerPlayButton = document.getElementById('computer-play-button')
+  computerPlayButton.addEventListener('click', ()=>{
+    computerPlayButton.remove()
+  })
+
+
+  return {
+
+  };
+})();
+
 module.exports = { Ship, Gameboard, findField, Player, game };
