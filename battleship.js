@@ -51,20 +51,20 @@ function Gameboard() {
   return {
     fields: createEmptyBoard(),
     gameOver: false,
-    addShip(... args) {//ex. (["A", 1], ["B", 1])
+    addShip(...args) {//ex. (["A", 1], ["B", 1])
       let newShip = Ship(args.length);
       let fieldsToFill = args
 
       //check if fields are blocked
-      for (let i = 0; i < fieldsToFill.length; i++){
-        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked){
+      for (let i = 0; i < fieldsToFill.length; i++) {
+        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked) {
           throw "addShip - Invalid field"
         }
       }
 
-      for (let i = 0; i < this.fields.length; i++){
-        for (let j = 0; j < fieldsToFill.length; j++){
-          if ((this.fields[i].X === fieldsToFill[j][0]) && (this.fields[i].Y === fieldsToFill[j][1])){
+      for (let i = 0; i < this.fields.length; i++) {
+        for (let j = 0; j < fieldsToFill.length; j++) {
+          if ((this.fields[i].X === fieldsToFill[j][0]) && (this.fields[i].Y === fieldsToFill[j][1])) {
             this.fields[i].ship = newShip
             this.fields[i].blocked = true
             let currentX = this.fields[i].X
@@ -72,12 +72,12 @@ function Gameboard() {
 
             let board = this
 
-            function blockSurroundingFields(Xmodifier, Ymodifier){
+            function blockSurroundingFields(Xmodifier, Ymodifier) {
               let XtoBeBlocked = letters[letters.findIndex(e => e === currentX) + Xmodifier]
-              if (XtoBeBlocked){
+              if (XtoBeBlocked) {
                 let YtoBeBlocked = currentY + Ymodifier
-  
-                if ((YtoBeBlocked < 11)&&(YtoBeBlocked > 0)){
+
+                if ((YtoBeBlocked < 11) && (YtoBeBlocked > 0)) {
                   findField(XtoBeBlocked, YtoBeBlocked, board).blocked = true
                 }
               }
@@ -100,12 +100,12 @@ function Gameboard() {
         }
       }
     },
-    placeShipRandomly(size){
+    placeShipRandomly(size) {
 
       let attemptedStarterFields = []
       let board = this
 
-      function attemptPlacing(){
+      function attemptPlacing() {
         let coordsToFill = []
 
         //let randomField = this.fields[Math.floor(Math.random()*this.fields.length)]
@@ -118,16 +118,16 @@ function Gameboard() {
         let Yup = randomField.Y + 1
         let Ydown = randomField.Y - 1
         //also check if the field is not blocked before pushing
-        if (letters.includes(Xup)){
+        if (letters.includes(Xup)) {
           nearbyFields.push([Xup, randomField.Y])
         }
-        if (letters.includes(Xdown)){
+        if (letters.includes(Xdown)) {
           nearbyFields.push([Xdown, randomField.Y])
         }
-        if (Yup < 10){
+        if (Yup < 10) {
           nearbyFields.push([randomField.X, Yup])
         }
-        if (Ydown > 0){
+        if (Ydown > 0) {
           nearbyFields.push([randomField.X, Ydown])
         }
         //pick random nearbyField to add to coordsToFill
@@ -138,41 +138,41 @@ function Gameboard() {
         //keep track of checked combinations?
         //if none is possible - retry whole function
         //if too many retries fail (81) = throw error
-  
+
         //place ships //ex. addShip(["A", 1], ["B", 1])
 
       }
       attemptPlacing()
 
     },
-    receiveAttack(targetX, targetY){
+    receiveAttack(targetX, targetY) {
       let attackedField = findField(targetX, targetY, this)
-      if (attackedField.ship){
+      if (attackedField.ship) {
         attackedField.ship.hit()
       }
       attackedField.hit = true
-      if (this.gameOverCheck()){
+      if (this.gameOverCheck()) {
         this.gameOver = true
       }
     },
-    gameOverCheck(){
+    gameOverCheck() {
       let unsunkShips = []
-      for (let field in this.fields){
-        if (this.fields[field].ship){
-          if (!this.fields[field].ship.sunk){
+      for (let field in this.fields) {
+        if (this.fields[field].ship) {
+          if (!this.fields[field].ship.sunk) {
             unsunkShips.push(this.fields[field].ship)
           }
         }
       }
-      if (unsunkShips.length < 1){
+      if (unsunkShips.length < 1) {
         return true
       } else {
         return false
       }
-      
+
     },
-    checkFieldHitStatus(X, Y){
-      if (findField(X, Y, this).hit){
+    checkFieldHitStatus(X, Y) {
+      if (findField(X, Y, this).hit) {
         return true
       } else {
         return false
@@ -182,26 +182,26 @@ function Gameboard() {
 }
 
 
-function findField(coordX, coordY, board){
+function findField(coordX, coordY, board) {
   return board.fields.find(e => (e.X === coordX) && (e.Y === coordY))
 }
 
-function Player(type = "human"){//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
+function Player(type = "human") {//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
   return {
     type,
-    attackBoard(board, X, Y){
-      if (!findField(X, Y, board).hit){
+    attackBoard(board, X, Y) {
+      if (!findField(X, Y, board).hit) {
         board.receiveAttack(X, Y)
       }
       else {
         return false
       }
     },
-    randomAttack(board){
+    randomAttack(board) {
       let fieldsNotAttackedYet = board.fields.filter(f => f.hit === false)
-      if (fieldsNotAttackedYet.length !== 0){
-        let target = fieldsNotAttackedYet[Math.floor(Math.random()*fieldsNotAttackedYet.length)]
-        this.attackBoard(board, target.X, target.Y) 
+      if (fieldsNotAttackedYet.length !== 0) {
+        let target = fieldsNotAttackedYet[Math.floor(Math.random() * fieldsNotAttackedYet.length)]
+        this.attackBoard(board, target.X, target.Y)
       } else {
         return
       }
@@ -232,9 +232,30 @@ const game = (() => {
 
 const DOMManagement = (() => {
   const computerPlayButton = document.getElementById('computer-play-button')
-  computerPlayButton.addEventListener('click', ()=>{
-    computerPlayButton.remove()
+  computerPlayButton.addEventListener('click', () => {
+    displayBoard()
+
+    document.getElementById('centered-button-container').remove()
   })
+
+  function displayBoard() {
+    const boardContainer = document.createElement('div')
+    boardContainer.classList.add('container', 'board-container')
+    document.body.appendChild(boardContainer)
+
+    for (let i = 0; i < 10; i++) {
+      const newRow = document.createElement('div')
+      newRow.classList.add('row')
+      boardContainer.appendChild(newRow)
+      for (let j = 0; j < 10; j++){
+        const newColumn = document.createElement('div')
+        newColumn.classList.add('col')
+        newRow.appendChild(newColumn)
+      }
+    }
+
+
+  }
 
 
   return {
