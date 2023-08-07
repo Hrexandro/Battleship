@@ -233,26 +233,41 @@ const game = (() => {
 const DOMManagement = (() => {
   const computerPlayButton = document.getElementById('computer-play-button')
   computerPlayButton.addEventListener('click', () => {
-    displayBoard()
-
+    displayBoard('player-one-area', 'playerOneBoard')
+    displayBoard('player-two-area', 'playerTwoBoard')
     document.getElementById('centered-button-container').remove()
   })
 
-  function displayBoard() {
-    const boardContainer = document.createElement('div')
-    boardContainer.classList.add('container', 'board-container')
-    document.body.appendChild(boardContainer)
+  function displayBoard(parent, boardName) {
+    let boardHeading = document.createElement('h3')
+    boardHeading.innerText = (boardName === 'playerOneBoard') ? 'Player One' : 'Player Two'
+    document.getElementById(parent).appendChild(boardHeading)
 
-    for (let i = 0; i < 10; i++) {
-      const newRow = document.createElement('div')
-      newRow.classList.add('row')
-      boardContainer.appendChild(newRow)
-      for (let j = 0; j < 10; j++){
-        const newColumn = document.createElement('div')
-        newColumn.classList.add('col')
-        newRow.appendChild(newColumn)
-      }
+
+    const boardContainer = document.createElement('div')
+    // boardContainer.classList.add('container')
+    boardContainer.classList.add('board-container')
+    boardContainer.setAttribute('id', boardName)
+    document.getElementById(parent).appendChild(boardContainer)
+
+    for (let k = 0; k < 100; k++){
+       const newField = document.createElement('div')
+       newField.classList.add('board-field')
+       boardContainer.appendChild(newField)
     }
+
+    // for (let i = 0; i < 10; i++) {
+    //   const newRow = document.createElement('div')
+    //   newRow.classList.add('row')
+    //   boardContainer.appendChild(newRow)
+    //   for (let j = 0; j < 10; j++){
+    //     const newColumn = document.createElement('div')
+    //     newColumn.classList.add('board-field')
+    //     newColumn.classList.add('col')
+
+    //     newRow.appendChild(newColumn)
+    //   }
+    // }
 
 
   }
