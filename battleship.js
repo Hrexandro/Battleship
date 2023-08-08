@@ -31,7 +31,7 @@ function Ship(length = 1) {
   };
 }
 
-function Gameboard() {
+function Gameboard(player = null) {
   function createEmptyBoard() {
     let boardFields = [];
     for (let i = 1; i < 11; i++) {
@@ -49,14 +49,15 @@ function Gameboard() {
   }
 
   return {
+    player,
     fields: createEmptyBoard(),
     gameOver: false,
     addShip(...args) {//ex. (["A", 1], ["B", 1])
       let newShip = Ship(args.length);
       let fieldsToFill = args
-
       //check if fields are blocked
       for (let i = 0; i < fieldsToFill.length; i++) {
+        console.log("chex")
         if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked) {
           throw "addShip - Invalid field"
         }
@@ -183,6 +184,8 @@ function Gameboard() {
 
 
 function findField(coordX, coordY, board) {
+  console.log(coordX)
+  console.log(coordY)
   return board.fields.find(e => (e.X === coordX) && (e.Y === coordY))
 }
 
@@ -210,24 +213,6 @@ function Player(type = "human") {//later add intelligent target picking, i.e. tr
   }
 
 }
-//Create boards for both players
-//randomly put correct number of ships on board
-//they cannot touch
-
-//!!! fields around sunk ship should count as hit
-
-//players take turns
-
-//wiktory
-
-const game = (() => {
-  //let boardPlayerOne = Gameboard.createEmptyBoard()
-
-
-  return {
-    //boardPlayerOne
-  };
-})();
 
 
 const DOMManagement = (() => {
@@ -240,7 +225,7 @@ const DOMManagement = (() => {
 
   function displayBoard(parent, boardName) {
     let boardHeading = document.createElement('h3')
-    boardHeading.innerText = (boardName === 'playerOneBoard') ? 'Player One' : 'Player Two'
+    boardHeading.innerText = (boardName === 'playerOneBoard') ? 'Player' : 'Opponent'
     document.getElementById(parent).appendChild(boardHeading)
 
 
@@ -249,33 +234,62 @@ const DOMManagement = (() => {
     boardContainer.classList.add('board-container')
     boardContainer.setAttribute('id', boardName)
     document.getElementById(parent).appendChild(boardContainer)
+    let coordX = 1
+    let coordY = letters[0]
 
-    for (let k = 0; k < 100; k++){
-       const newField = document.createElement('div')
-       newField.classList.add('board-field')
-       boardContainer.appendChild(newField)
+    for (let k = 0; k < 100; k++, coordX++) {
+      const newField = document.createElement('div')
+      newField.classList.add('board-field')
+      if (coordX > 10) {
+        coordX = 1
+        coordY = letters[letters.findIndex(e => e === coordY) + 1]
+      }
+      let playerCoord = (boardName === 'playerOneBoard') ? 'O' : 'T' //O - player One; T - player Two
+      let coordinates = playerCoord + coordX + coordY
+      newField.setAttribute('id', coordinates)
+
+
+      boardContainer.appendChild(newField)
     }
 
-    // for (let i = 0; i < 10; i++) {
-    //   const newRow = document.createElement('div')
-    //   newRow.classList.add('row')
-    //   boardContainer.appendChild(newRow)
-    //   for (let j = 0; j < 10; j++){
-    //     const newColumn = document.createElement('div')
-    //     newColumn.classList.add('board-field')
-    //     newColumn.classList.add('col')
 
-    //     newRow.appendChild(newColumn)
-    //   }
-    // }
-
-
+    
   }
+
+  function updateBoardDisplay(board) {//board would be O or T and based on that display ships (for now)
+    //DO THIS NEXT
+    
+  }
+
+  return {
+    updateBoardDisplay
+  };
+})();
+
+//Create boards for both players
+//randomly put correct number of ships on board
+//they cannot touch
+
+//!!! fields around sunk ship should count as hit
+
+//players take turns
+
+//wiktory
+
+const game = (() => {
+  let boardPlayerOne = Gameboard("O")
+  boardPlayerOne.addShip(['A', 1])
+  let boardPlayerTwo = Gameboard("T")
+  boardPlayerTwo.addShip(['J', 10])
+
+  DOMManagement.updateBoardDisplay(boardPlayerOne)
+  DOMManagement.updateBoardDisplay(boardPlayerTwo)
 
 
   return {
-
+    boardPlayerOne, boardPlayerTwo
   };
 })();
+
 
 module.exports = { Ship, Gameboard, findField, Player, game };
