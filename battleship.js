@@ -58,8 +58,10 @@ function Gameboard(player = null) {
       //check if fields are blocked
       for (let i = 0; i < fieldsToFill.length; i++) {
         console.log("chex")
-        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked) {
+        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined){
           throw "addShip - Invalid field"
+        } else if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked) {
+          throw "addShip - Blocked field"
         }
       }
 
