@@ -57,8 +57,7 @@ function Gameboard(player = null) {
       let fieldsToFill = args
       //check if fields are blocked
       for (let i = 0; i < fieldsToFill.length; i++) {
-        console.log("chex")
-        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined){
+        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined) {
           throw "addShip - Invalid field"
         } else if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked) {
           throw "addShip - Blocked field"
@@ -186,8 +185,6 @@ function Gameboard(player = null) {
 
 
 function findField(coordX, coordY, board) {
-  console.log(coordX)
-  console.log(coordY)
   return board.fields.find(e => (e.X === coordX) && (e.Y === coordY))
 }
 
@@ -223,6 +220,7 @@ const DOMManagement = (() => {
     displayBoard('player-one-area', 'playerOneBoard')
     displayBoard('player-two-area', 'playerTwoBoard')
     document.getElementById('centered-button-container').remove()
+    game.startGame()
   })
 
   function displayBoard(parent, boardName) {
@@ -236,15 +234,15 @@ const DOMManagement = (() => {
     boardContainer.classList.add('board-container')
     boardContainer.setAttribute('id', boardName)
     document.getElementById(parent).appendChild(boardContainer)
-    let coordX = 1
-    let coordY = letters[0]
+    let coordY = 1
+    let coordX = letters[0]
 
-    for (let k = 0; k < 100; k++, coordX++) {
+    for (let k = 0; k < 100; k++, coordY++) {
       const newField = document.createElement('div')
       newField.classList.add('board-field')
-      if (coordX > 10) {
-        coordX = 1
-        coordY = letters[letters.findIndex(e => e === coordY) + 1]
+      if (coordY > 10) {
+        coordY = 1
+        coordX = letters[letters.findIndex(e => e === coordX) + 1]
       }
       let playerCoord = (boardName === 'playerOneBoard') ? 'O' : 'T' //O - player One; T - player Two
       let coordinates = playerCoord + coordX + coordY
@@ -255,12 +253,29 @@ const DOMManagement = (() => {
     }
 
 
-    
+
   }
 
   function updateBoardDisplay(board) {//board would be O or T and based on that display ships (for now)
+    console.log(board.player)
+    let playerCoord = (board.player === "O") ? "O" : "T"
+    let boardID = (playerCoord === "O") ? "playerOneBoard" : "playerTwoBoard"
+    console.log(boardID)
+    let displayedBoard = document.getElementById(boardID)
+
+    displayedBoard.classList.add("cought")
+
+    board.fields.forEach((f) => {
+      if (f.ship) {
+        console.log(playerCoord + f.X + f.Y)
+        document.getElementById(playerCoord + f.X + f.Y).classList.add("visible-ship")
+
+      }
+    })
+
+    //id="playerTwoBoard"
     //DO THIS NEXT
-    
+
   }
 
   return {
@@ -279,17 +294,21 @@ const DOMManagement = (() => {
 //wiktory
 
 const game = (() => {
-  let boardPlayerOne = Gameboard("O")
-  boardPlayerOne.addShip(['A', 1])
-  let boardPlayerTwo = Gameboard("T")
-  boardPlayerTwo.addShip(['J', 10])
+  function startGame() {
+    let boardPlayerOne = Gameboard("O")
+    boardPlayerOne.addShip(['A', 1])
+    boardPlayerOne.addShip(['B', 8])
+    let boardPlayerTwo = Gameboard("T")
+    boardPlayerTwo.addShip(['J', 10])
 
-  DOMManagement.updateBoardDisplay(boardPlayerOne)
-  DOMManagement.updateBoardDisplay(boardPlayerTwo)
+    DOMManagement.updateBoardDisplay(boardPlayerOne)
+    DOMManagement.updateBoardDisplay(boardPlayerTwo)
+
+  }
 
 
   return {
-    boardPlayerOne, boardPlayerTwo
+    startGame
   };
 })();
 
