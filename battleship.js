@@ -31,7 +31,7 @@ function Ship(length = 1) {
   };
 }
 
-function Gameboard(player = null) {
+function Gameboard(player = null, visible = true) {
   function createEmptyBoard() {
     let boardFields = [];
     for (let i = 1; i < 11; i++) {
@@ -50,6 +50,7 @@ function Gameboard(player = null) {
 
   return {
     player,
+    visible,
     fields: createEmptyBoard(),
     gameOver: false,
     addShip(...args) {//ex. (["A", 1], ["B", 1])
@@ -257,19 +258,15 @@ const DOMManagement = (() => {
   }
 
   function updateBoardDisplay(board) {//board would be O or T and based on that display ships (for now)
-    console.log(board.player)
     let playerCoord = (board.player === "O") ? "O" : "T"
     let boardID = (playerCoord === "O") ? "playerOneBoard" : "playerTwoBoard"
-    console.log(boardID)
     let displayedBoard = document.getElementById(boardID)
 
     displayedBoard.classList.add("cought")
 
     board.fields.forEach((f) => {
-      if (f.ship) {
-        console.log(playerCoord + f.X + f.Y)
+      if (f.ship && board.visible) {
         document.getElementById(playerCoord + f.X + f.Y).classList.add("visible-ship")
-
       }
     })
 
@@ -294,17 +291,33 @@ const DOMManagement = (() => {
 //wiktory
 
 const game = (() => {
+  let currentPlayer = "O"
+
   function startGame() {
     let boardPlayerOne = Gameboard("O")
     boardPlayerOne.addShip(['A', 1])
     boardPlayerOne.addShip(['B', 8])
-    let boardPlayerTwo = Gameboard("T")
+    let boardPlayerTwo = Gameboard("T", false)
     boardPlayerTwo.addShip(['J', 10])
 
     DOMManagement.updateBoardDisplay(boardPlayerOne)
     DOMManagement.updateBoardDisplay(boardPlayerTwo)
 
+    makeMove(currentPlayer)
   }
+
+  function makeMove(player){
+    if (player === "O"){
+      let targetedBoard = document.getElementById("playerTwoBoard")
+
+      for (let a = 0; a < targetedBoard.children.length; a++){
+        targetedBoard.children[a].addEventListener('click', ()=>{console.log(targetedBoard.children[a].id)})
+        //now add the shooty code
+        //then change the player, if computer, act accordingly
+      }
+    }
+  }
+
 
 
   return {
