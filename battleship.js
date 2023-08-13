@@ -8,9 +8,16 @@
 // You need methods to render the gameboards and to take user input for attacking.
 // For attacks, let the user click on a coordinate in the enemy Gameboard.
 // The game loop should step through the game turn by turn using only methods from other objects.
-// If at any point you are tempted to write a new function inside the game loop, step back and figure out which class or module that function should belong to.
+// If at any point you are tempted to write a new function inside the game loop,
+//step back and figure out which class or module that function should belong to.
 // Create conditions so that the game ends once one player’s ships have all been sunk.
 // This function is appropriate for the Game module.
+
+
+//finish basic game loop
+//add random ship placement
+//add manual ship placement
+//put pointer cursor when on shootable field
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
@@ -150,6 +157,7 @@ function Gameboard(player = null, visible = true) {
     },
     receiveAttack(targetX, targetY) {
       let attackedField = findField(targetX, targetY, this)
+      console.log(targetX, targetY, this)
       if (attackedField.ship) {
         attackedField.ship.hit()
       }
@@ -186,7 +194,7 @@ function Gameboard(player = null, visible = true) {
 
 
 function findField(coordX, coordY, board) {
-  return board.fields.find(e => (e.X === coordX) && (e.Y === coordY))
+  return board.fields.find(e => (e.X == coordX) && (e.Y == coordY))
 }
 
 function Player(type = "human") {//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
@@ -265,8 +273,15 @@ const DOMManagement = (() => {
     displayedBoard.classList.add("cought")
 
     board.fields.forEach((f) => {
+      let fieldInDOM = document.getElementById(playerCoord + f.X + f.Y)
       if (f.ship && board.visible) {
-        document.getElementById(playerCoord + f.X + f.Y).classList.add("visible-ship")
+        fieldInDOM.classList.add("visible-ship")
+      }
+      if (f.hit){
+        fieldInDOM.classList.add("hit-field")
+        if (f.ship){
+          fieldInDOM.classList.add("hit-ship")
+        }
       }
     })
 
@@ -297,26 +312,45 @@ const game = (() => {
     let boardPlayerOne = Gameboard("O")
     boardPlayerOne.addShip(['A', 1])
     boardPlayerOne.addShip(['B', 8])
-    let boardPlayerTwo = Gameboard("T", false)
+    let boardPlayerTwo = Gameboard("T", true)//second argument is visibility
     boardPlayerTwo.addShip(['J', 10])
 
     DOMManagement.updateBoardDisplay(boardPlayerOne)
     DOMManagement.updateBoardDisplay(boardPlayerTwo)
+    
+    function makeMove(player){
+      if (player === "O"){
+        let targetedBoardDOM = document.getElementById("playerTwoBoard")
+        let targetedBoardCode = boardPlayerTwo//errors
+  
+        for (let a = 0; a < targetedBoardDOM.children.length; a++){
+          targetedBoardDOM.children[a].addEventListener('click', ()=>{
+            console.log(targetedBoardDOM.children[a].id[4])
+            let targetedX = targetedBoardDOM.children[a].id[1]
 
+
+            //if the id has a 4th value, concatenate it to 3rd, otherwise just use 3rd value of id as Y
+            let targetedY = (targetedBoardDOM.children[a].id[3] ? targetedBoardDOM.children[a].id[2].concat(targetedBoardDOM.children[a].id[3]) : targetedBoardDOM.children[a].id[2])
+            console.log(targetedY)
+            targetedBoardCode.receiveAttack(targetedX, targetedY)
+
+            DOMManagement.updateBoardDisplay(boardPlayerTwo)
+            //add handling fields that have already been shot at
+            //then change player etc etc
+          })
+
+        }
+      } else if (player === "T"){
+        //switch to using the player object
+        //designate the player coord there too
+      }
+
+
+      //stop making moves if game has ended
+    }
     makeMove(currentPlayer)
   }
 
-  function makeMove(player){
-    if (player === "O"){
-      let targetedBoard = document.getElementById("playerTwoBoard")
-
-      for (let a = 0; a < targetedBoard.children.length; a++){
-        targetedBoard.children[a].addEventListener('click', ()=>{console.log(targetedBoard.children[a].id)})
-        //now add the shooty code
-        //then change the player, if computer, act accordingly
-      }
-    }
-  }
 
 
 
