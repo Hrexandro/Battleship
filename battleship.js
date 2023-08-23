@@ -197,7 +197,7 @@ function findField(coordX, coordY, board) {
   return board.fields.find(e => (e.X == coordX) && (e.Y == coordY))
 }
 
-function Player(type = "human", designation = null) {//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
+function Player(type = 'human', designation = null) {//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
   return {
     type,
     designation,
@@ -323,9 +323,9 @@ const game = (() => {
     DOMManagement.updateBoardDisplay(boardPlayerTwo)
     
     function makeMove(player){
-      if (player.designation === "O"){
-        let targetedBoardDOM = document.getElementById("playerTwoBoard")
-        let targetedBoardCode = boardPlayerTwo//errors
+      if (player.type === 'human'){
+        let targetedBoardDOM = document.getElementById("playerTwoBoard")//fix in case of two humans
+        let targetedBoard = boardPlayerTwo
   
         for (let a = 0; a < targetedBoardDOM.children.length; a++){
           targetedBoardDOM.children[a].addEventListener('click', ()=>{
@@ -336,21 +336,33 @@ const game = (() => {
             //if the id has a 4th value, concatenate it to 3rd, otherwise just use 3rd value of id as Y
             let targetedY = (targetedBoardDOM.children[a].id[3] ? targetedBoardDOM.children[a].id[2].concat(targetedBoardDOM.children[a].id[3]) : targetedBoardDOM.children[a].id[2])
             console.log(targetedY)
-            targetedBoardCode.receiveAttack(targetedX, targetedY)
+            player.attackBoard(targetedBoard, targetedX, targetedY)
+            //targetedBoard.receiveAttack(targetedX, targetedY)
 
             DOMManagement.updateBoardDisplay(boardPlayerTwo)
             //add handling fields that have already been shot at
             //then change player etc etc
+            //currentPlayer = playerTwo //what if both players are human?
+
+
+            currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
+            makeMove(currentPlayer)
           })
 
         }
-      } else if (player.designation === "T"){
-        //switch to using the player object
-        //designate the player coord there too
+      } else if (player.type === 'computer'){
+        let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
+        let targetedBoard = boardPlayerOne
+
+        //finish this
+
+
       }
 
 
+
       //stop making moves if game has ended
+
     }
 
     currentPlayer = playerOne
