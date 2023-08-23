@@ -197,9 +197,10 @@ function findField(coordX, coordY, board) {
   return board.fields.find(e => (e.X == coordX) && (e.Y == coordY))
 }
 
-function Player(type = "human") {//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
+function Player(type = "human", designation = null) {//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
   return {
     type,
+    designation,
     attackBoard(board, X, Y) {
       if (!findField(X, Y, board).hit) {
         board.receiveAttack(X, Y)
@@ -266,7 +267,7 @@ const DOMManagement = (() => {
   }
 
   function updateBoardDisplay(board) {//board would be O or T and based on that display ships (for now)
-    let playerCoord = (board.player === "O") ? "O" : "T"
+    let playerCoord = (board.player.designation === "O") ? "O" : "T"
     let boardID = (playerCoord === "O") ? "playerOneBoard" : "playerTwoBoard"
     let displayedBoard = document.getElementById(boardID)
 
@@ -306,20 +307,23 @@ const DOMManagement = (() => {
 //wiktory
 
 const game = (() => {
-  let currentPlayer = "O"
+  let currentPlayer = null
 
   function startGame() {
-    let boardPlayerOne = Gameboard("O")
+    let playerOne = Player('human', 'O')
+    let playerTwo = Player('computer', 'T')
+
+    let boardPlayerOne = Gameboard(playerOne)
     boardPlayerOne.addShip(['A', 1])
     boardPlayerOne.addShip(['B', 8])
-    let boardPlayerTwo = Gameboard("T", true)//second argument is visibility
+    let boardPlayerTwo = Gameboard(playerTwo, false)//second argument is visibility
     boardPlayerTwo.addShip(['J', 10])
 
     DOMManagement.updateBoardDisplay(boardPlayerOne)
     DOMManagement.updateBoardDisplay(boardPlayerTwo)
     
     function makeMove(player){
-      if (player === "O"){
+      if (player.designation === "O"){
         let targetedBoardDOM = document.getElementById("playerTwoBoard")
         let targetedBoardCode = boardPlayerTwo//errors
   
@@ -340,7 +344,7 @@ const game = (() => {
           })
 
         }
-      } else if (player === "T"){
+      } else if (player.designation === "T"){
         //switch to using the player object
         //designate the player coord there too
       }
@@ -348,6 +352,8 @@ const game = (() => {
 
       //stop making moves if game has ended
     }
+
+    currentPlayer = playerOne
     makeMove(currentPlayer)
   }
 
