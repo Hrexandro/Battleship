@@ -14,6 +14,12 @@
 // This function is appropriate for the Game module.
 
 
+//MOST URGENT:
+//move handling of events to DOMManagement
+//after each shot, the computer shoots 2x more: 1x, 2x, 4x, 8x etc - ERROR TO BE FIXED
+//removing event listeners after field has been clicked & shot made
+//handle ending of game when all ships of a player are sunk
+
 //finish basic game loop
 //add random ship placement
 //add manual ship placement
@@ -210,6 +216,7 @@ function Player(type = 'human', designation = null) {//later add intelligent tar
       }
     },
     randomAttack(board) {
+      console.log('random attack performed once')
       let fieldsNotAttackedYet = board.fields.filter(f => f.hit === false)
       if (fieldsNotAttackedYet.length !== 0) {
         let target = fieldsNotAttackedYet[Math.floor(Math.random() * fieldsNotAttackedYet.length)]
@@ -291,8 +298,18 @@ const DOMManagement = (() => {
 
   }
 
+  function handleFieldClick(clickedField, targetedBoard, attacker){
+    let targetedX = clickedField.id[1]
+
+
+
+    //if the id has a 4th value, concatenate it to 3rd, otherwise just use 3rd value of id as Y
+    let targetedY = (clickedField.id[3] ? clickedField.id[2].concat(clickedField.id[3]) : clickedField.id[2])
+    attacker.attackBoard(targetedBoard, targetedX, targetedY)
+  }
+
   return {
-    updateBoardDisplay
+    updateBoardDisplay, handleFieldClick
   };
 })();
 
@@ -319,41 +336,49 @@ const game = (() => {
     let boardPlayerTwo = Gameboard(playerTwo, false)//second argument is visibility
     boardPlayerTwo.addShip(['J', 10])
 
+
+
     DOMManagement.updateBoardDisplay(boardPlayerOne)
     DOMManagement.updateBoardDisplay(boardPlayerTwo)
+
+    
     
     function makeMove(player){
       if (player.type === 'human'){
         let targetedBoardDOM = document.getElementById("playerTwoBoard")//fix in case of two humans
         let targetedBoard = boardPlayerTwo
-  
+
+
+  //transfer adding event listeners to DOMManagement
+  //the entire reaction to the click needs to be a single function to be able to
+  //easily remove the event listener afterwards
         for (let a = 0; a < targetedBoardDOM.children.length; a++){
           targetedBoardDOM.children[a].addEventListener('click', ()=>{
-            console.log(targetedBoardDOM.children[a].id[4])
-            let targetedX = targetedBoardDOM.children[a].id[1]
+            
+            if (!targetedBoardDOM.children[a].classList.contains('hit-field')){
+              DOMManagement.handleFieldClick(targetedBoardDOM.children[a], targetedBoard, player)
+            }
 
-
-            //if the id has a 4th value, concatenate it to 3rd, otherwise just use 3rd value of id as Y
-            let targetedY = (targetedBoardDOM.children[a].id[3] ? targetedBoardDOM.children[a].id[2].concat(targetedBoardDOM.children[a].id[3]) : targetedBoardDOM.children[a].id[2])
-            console.log(targetedY)
-            player.attackBoard(targetedBoard, targetedX, targetedY)
-            //targetedBoard.receiveAttack(targetedX, targetedY)
-
+            DOMManagement.updateBoardDisplay(boardPlayerOne)
             DOMManagement.updateBoardDisplay(boardPlayerTwo)
-            //add handling fields that have already been shot at
-            //then change player etc etc
-            //currentPlayer = playerTwo //what if both players are human?
-
-
+            //remove the eventListeners!
             currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
             makeMove(currentPlayer)
           })
 
         }
       } else if (player.type === 'computer'){
-        let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
+        //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
         let targetedBoard = boardPlayerOne
+        player.randomAttack(targetedBoard)
 
+
+
+        //extract the below into a function
+        DOMManagement.updateBoardDisplay(boardPlayerOne)
+        DOMManagement.updateBoardDisplay(boardPlayerTwo)
+        currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
+        makeMove(currentPlayer)
         //finish this
 
 
