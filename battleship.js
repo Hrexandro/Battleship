@@ -308,8 +308,26 @@ const DOMManagement = (() => {
     attacker.attackBoard(targetedBoard, targetedX, targetedY)
   }
 
+  // function listenForClicks(board){//copied from make move
+  //           for (let a = 0; a < board.children.length; a++){
+  //             board.children[a].addEventListener('click', ()=>{
+            
+  //           if (!board.children[a].classList.contains('hit-field')){
+  //             DOMManagement.handleFieldClick(board.children[a], targetedBoard, player)
+  //           }
+
+  //           DOMManagement.updateBoardDisplay(boardPlayerOne)
+  //           DOMManagement.updateBoardDisplay(boardPlayerTwo)
+  //           //remove the eventListeners!
+  //           currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
+  //           makeMove(currentPlayer)
+  //         })
+
+  //       }
+  // }
+
   return {
-    updateBoardDisplay, handleFieldClick
+    updateBoardDisplay, handleFieldClick, //listenForClicks
   };
 })();
 
@@ -347,26 +365,32 @@ const game = (() => {
       if (player.type === 'human'){
         let targetedBoardDOM = document.getElementById("playerTwoBoard")//fix in case of two humans
         let targetedBoard = boardPlayerTwo
-
+        //DOMManagement.listenForClicks(targetedBoardDOM)
 
   //transfer adding event listeners to DOMManagement
   //the entire reaction to the click needs to be a single function to be able to
   //easily remove the event listener afterwards
-        for (let a = 0; a < targetedBoardDOM.children.length; a++){
-          targetedBoardDOM.children[a].addEventListener('click', ()=>{
-            
-            if (!targetedBoardDOM.children[a].classList.contains('hit-field')){
-              DOMManagement.handleFieldClick(targetedBoardDOM.children[a], targetedBoard, player)
+
+        function fieldClickEvent(event){
+            if (!event.target.classList.contains('hit-field')){
+              DOMManagement.handleFieldClick(event.target, targetedBoard, player)
             }
 
             DOMManagement.updateBoardDisplay(boardPlayerOne)
             DOMManagement.updateBoardDisplay(boardPlayerTwo)
             //remove the eventListeners!
+            event.target.removeEventListener('click', fieldClickEvent)
             currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
             makeMove(currentPlayer)
-          })
+        }
+
+
+        for (let a = 0; a < targetedBoardDOM.children.length; a++){
+          targetedBoardDOM.children[a].addEventListener('click', fieldClickEvent)
 
         }
+
+
       } else if (player.type === 'computer'){
         //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
         let targetedBoard = boardPlayerOne
