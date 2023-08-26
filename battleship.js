@@ -163,7 +163,6 @@ function Gameboard(player = null, visible = true) {
     },
     receiveAttack(targetX, targetY) {
       let attackedField = findField(targetX, targetY, this)
-      console.log(targetX, targetY, this)
       if (attackedField.ship) {
         attackedField.ship.hit()
       }
@@ -301,33 +300,14 @@ const DOMManagement = (() => {
   function handleFieldClick(clickedField, targetedBoard, attacker){
     let targetedX = clickedField.id[1]
 
-
-
     //if the id has a 4th value, concatenate it to 3rd, otherwise just use 3rd value of id as Y
     let targetedY = (clickedField.id[3] ? clickedField.id[2].concat(clickedField.id[3]) : clickedField.id[2])
     attacker.attackBoard(targetedBoard, targetedX, targetedY)
   }
 
-  // function listenForClicks(board){//copied from make move
-  //           for (let a = 0; a < board.children.length; a++){
-  //             board.children[a].addEventListener('click', ()=>{
-            
-  //           if (!board.children[a].classList.contains('hit-field')){
-  //             DOMManagement.handleFieldClick(board.children[a], targetedBoard, player)
-  //           }
-
-  //           DOMManagement.updateBoardDisplay(boardPlayerOne)
-  //           DOMManagement.updateBoardDisplay(boardPlayerTwo)
-  //           //remove the eventListeners!
-  //           currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-  //           makeMove(currentPlayer)
-  //         })
-
-  //       }
-  // }
 
   return {
-    updateBoardDisplay, handleFieldClick, //listenForClicks
+    updateBoardDisplay, handleFieldClick
   };
 })();
 
@@ -362,23 +342,21 @@ const game = (() => {
     
     
     function makeMove(player){
+
+      console.log("make move runs with player:")
+      console.log(player.type)
       if (player.type === 'human'){
+        console.log("human turn")
         let targetedBoardDOM = document.getElementById("playerTwoBoard")//fix in case of two humans
         let targetedBoard = boardPlayerTwo
-        //DOMManagement.listenForClicks(targetedBoardDOM)
-
-  //transfer adding event listeners to DOMManagement
-  //the entire reaction to the click needs to be a single function to be able to
-  //easily remove the event listener afterwards
-
         function fieldClickEvent(event){
+          console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!field click event happens")
+          console.log(event)
             if (!event.target.classList.contains('hit-field')){
               DOMManagement.handleFieldClick(event.target, targetedBoard, player)
             }
-
             DOMManagement.updateBoardDisplay(boardPlayerOne)
             DOMManagement.updateBoardDisplay(boardPlayerTwo)
-            //remove the eventListeners!
             event.target.removeEventListener('click', fieldClickEvent)
             currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
             makeMove(currentPlayer)
@@ -387,31 +365,25 @@ const game = (() => {
 
         for (let a = 0; a < targetedBoardDOM.children.length; a++){
           targetedBoardDOM.children[a].addEventListener('click', fieldClickEvent)
-
         }
 
 
       } else if (player.type === 'computer'){
+        console.log("computer turn")
         //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
         let targetedBoard = boardPlayerOne
         player.randomAttack(targetedBoard)
-
-
 
         //extract the below into a function
         DOMManagement.updateBoardDisplay(boardPlayerOne)
         DOMManagement.updateBoardDisplay(boardPlayerTwo)
         currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-        makeMove(currentPlayer)
+        // console.log("computer turn player wshitch")
+        // console.log(currentPlayer.type)
+        makeMove(currentPlayer) 
         //finish this
-
-
       }
-
-
-
       //stop making moves if game has ended
-
     }
 
     currentPlayer = playerOne
