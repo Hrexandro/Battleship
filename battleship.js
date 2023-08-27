@@ -215,7 +215,6 @@ function Player(type = 'human', designation = null) {//later add intelligent tar
       }
     },
     randomAttack(board) {
-      console.log('random attack performed once')
       let fieldsNotAttackedYet = board.fields.filter(f => f.hit === false)
       if (fieldsNotAttackedYet.length !== 0) {
         let target = fieldsNotAttackedYet[Math.floor(Math.random() * fieldsNotAttackedYet.length)]
@@ -343,23 +342,20 @@ const game = (() => {
     
     function makeMove(player){
 
-      console.log("make move runs with player:")
-      console.log(player.type)
       if (player.type === 'human'){
-        console.log("human turn")
         let targetedBoardDOM = document.getElementById("playerTwoBoard")//fix in case of two humans
         let targetedBoard = boardPlayerTwo
+
         function fieldClickEvent(event){
-          console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!field click event happens")
-          console.log(event)
             if (!event.target.classList.contains('hit-field')){
               DOMManagement.handleFieldClick(event.target, targetedBoard, player)
+              DOMManagement.updateBoardDisplay(boardPlayerOne)
+              DOMManagement.updateBoardDisplay(boardPlayerTwo)
+              event.target.removeEventListener('click', fieldClickEvent)
+              currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
+              //add a second of wait before the computer makes its move
+              makeMove(currentPlayer)
             }
-            DOMManagement.updateBoardDisplay(boardPlayerOne)
-            DOMManagement.updateBoardDisplay(boardPlayerTwo)
-            event.target.removeEventListener('click', fieldClickEvent)
-            currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-            makeMove(currentPlayer)
         }
 
 
@@ -369,7 +365,7 @@ const game = (() => {
 
 
       } else if (player.type === 'computer'){
-        console.log("computer turn")
+
         //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
         let targetedBoard = boardPlayerOne
         player.randomAttack(targetedBoard)
@@ -378,8 +374,7 @@ const game = (() => {
         DOMManagement.updateBoardDisplay(boardPlayerOne)
         DOMManagement.updateBoardDisplay(boardPlayerTwo)
         currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-        // console.log("computer turn player wshitch")
-        // console.log(currentPlayer.type)
+
         makeMove(currentPlayer) 
         //finish this
       }
