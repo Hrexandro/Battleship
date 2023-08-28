@@ -208,6 +208,8 @@ function Player(type = 'human', designation = null) {//later add intelligent tar
     designation,
     attackBoard(board, X, Y) {
       if (!findField(X, Y, board).hit) {
+        let explosion = new Audio("explosion.mp3"); 
+        explosion.play();
         board.receiveAttack(X, Y)
       }
       else {
@@ -354,7 +356,8 @@ const game = (() => {
               event.target.removeEventListener('click', fieldClickEvent)
               currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
               //add a second of wait before the computer makes its move
-              makeMove(currentPlayer)
+              setTimeout(makeMove, 1000, currentPlayer);
+              //makeMove(currentPlayer)
             }
         }
 
