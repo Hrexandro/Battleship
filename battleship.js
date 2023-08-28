@@ -15,10 +15,13 @@
 
 
 //MOST URGENT:
-//move handling of events to DOMManagement
-//after each shot, the computer shoots 2x more: 1x, 2x, 4x, 8x etc - ERROR TO BE FIXED
-//removing event listeners after field has been clicked & shot made
+
 //handle ending of game when all ships of a player are sunk
+//event removal to deactivate shooting after gamover:
+//player two loses - if in first move OK
+//if had a chance to make a move, player one can make as many additional moves as player two made throughout the game (???)
+//if player two wins, player one can just keep blasting for some reason. (???)
+
 
 //finish basic game loop
 //add random ship placement
@@ -208,7 +211,7 @@ function Player(type = 'human', designation = null) {//later add intelligent tar
     designation,
     attackBoard(board, X, Y) {
       if (!findField(X, Y, board).hit) {
-        let explosion = new Audio("explosion.mp3"); 
+        let explosion = new Audio("explosion.mp3");
         explosion.play();
         board.receiveAttack(X, Y)
       }
@@ -285,9 +288,9 @@ const DOMManagement = (() => {
       if (f.ship && board.visible) {
         fieldInDOM.classList.add("visible-ship")
       }
-      if (f.hit){
+      if (f.hit) {
         fieldInDOM.classList.add("hit-field")
-        if (f.ship){
+        if (f.ship) {
           fieldInDOM.classList.add("hit-ship")
         }
       }
@@ -298,7 +301,7 @@ const DOMManagement = (() => {
 
   }
 
-  function handleFieldClick(clickedField, targetedBoard, attacker){
+  function handleFieldClick(clickedField, targetedBoard, attacker) {
     let targetedX = clickedField.id[1]
 
     //if the id has a 4th value, concatenate it to 3rd, otherwise just use 3rd value of id as Y
@@ -331,7 +334,7 @@ const game = (() => {
 
     let boardPlayerOne = Gameboard(playerOne)
     boardPlayerOne.addShip(['A', 1])
-    boardPlayerOne.addShip(['B', 8])
+    //boardPlayerOne.addShip(['B', 8])
     let boardPlayerTwo = Gameboard(playerTwo, false)//second argument is visibility
     boardPlayerTwo.addShip(['J', 10])
 
@@ -340,46 +343,68 @@ const game = (() => {
     DOMManagement.updateBoardDisplay(boardPlayerOne)
     DOMManagement.updateBoardDisplay(boardPlayerTwo)
 
-    
-    
-    function makeMove(player){
 
-      if (player.type === 'human'){
+
+    function makeMove(player) {
+      function handleGameOver() {
+        function removeListenersFromBoard(clearedBoard) {
+          console.log(clearedBoard)
+          for (let b = 0; b < clearedBoard.children.length; b++) {
+            console.log(clearedBoard.children[b])
+            clearedBoard.children[b].removeEventListener('click', fieldClickEvent)
+          }
+        }
+        removeListenersFromBoard(document.getElementById('playerTwoBoard'))
+        removeListenersFromBoard(document.getElementById('playerOneBoard'))
+        console.log(`game over, player ${currentPlayer} won`)
+      }
+
+      if (player.type === 'human') {
         let targetedBoardDOM = document.getElementById("playerTwoBoard")//fix in case of two humans
         let targetedBoard = boardPlayerTwo
 
-        function fieldClickEvent(event){
-            if (!event.target.classList.contains('hit-field')){
-              DOMManagement.handleFieldClick(event.target, targetedBoard, player)
-              DOMManagement.updateBoardDisplay(boardPlayerOne)
-              DOMManagement.updateBoardDisplay(boardPlayerTwo)
-              event.target.removeEventListener('click', fieldClickEvent)
+        function fieldClickEvent(event) {
+          if (!event.target.classList.contains('hit-field')) {
+            DOMManagement.handleFieldClick(event.target, targetedBoard, player)
+            DOMManagement.updateBoardDisplay(boardPlayerOne)
+            DOMManagement.updateBoardDisplay(boardPlayerTwo)
+            event.target.removeEventListener('click', fieldClickEvent)
+            console.log(targetedBoard.gameOverCheck())
+            if (targetedBoard.gameOverCheck()) {
+              handleGameOver(targetedBoardDOM)
+            } else {
               currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-              //add a second of wait before the computer makes its move
-              setTimeout(makeMove, 1000, currentPlayer);
-              //makeMove(currentPlayer)
+              setTimeout(makeMove, 1, currentPlayer);
             }
+          }
         }
 
-
-        for (let a = 0; a < targetedBoardDOM.children.length; a++){
+        for (let a = 0; a < targetedBoardDOM.children.length; a++) {
           targetedBoardDOM.children[a].addEventListener('click', fieldClickEvent)
         }
 
 
-      } else if (player.type === 'computer'){
+      } else if (player.type === 'computer') {
 
         //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
         let targetedBoard = boardPlayerOne
-        player.randomAttack(targetedBoard)
+
+        ///////////////////////////////////////////////////////////FOR TEST PURPOSES ONLY
+        player.attackBoard(targetedBoard, 'A', 1)
+        //////////////////////////////////////////////////////////////////
+
+        //player.randomAttack(targetedBoard)
+
 
         //extract the below into a function
         DOMManagement.updateBoardDisplay(boardPlayerOne)
         DOMManagement.updateBoardDisplay(boardPlayerTwo)
-        currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-
-        makeMove(currentPlayer) 
-        //finish this
+        if (targetedBoard.gameOverCheck()) {
+          handleGameOver()
+        } else {
+          currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
+          makeMove(currentPlayer)
+        }
       }
       //stop making moves if game has ended
     }
