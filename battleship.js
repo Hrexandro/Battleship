@@ -14,14 +14,6 @@
 // This function is appropriate for the Game module.
 
 
-//MOST URGENT:
-
-//handle ending of game when all ships of a player are sunk
-//event removal to deactivate shooting after gamover:
-//player two loses - if in first move OK
-//if had a chance to make a move, player one can make as many additional moves as player two made throughout the game (???)
-//if player two wins, player one can just keep blasting for some reason. (???)
-
 
 //finish basic game loop
 //add random ship placement
@@ -346,17 +338,15 @@ const game = (() => {
 
 
     function makeMove(player) {
-      function handleGameOver() {
-        function removeListenersFromBoard(clearedBoard) {
-          console.log(clearedBoard)
-          for (let b = 0; b < clearedBoard.children.length; b++) {
-            console.log(clearedBoard.children[b])
-            clearedBoard.children[b].removeEventListener('click', fieldClickEvent)
-          }
+      function removeListenersFromBoard(clearedBoard) {
+        for (let b = 0; b < clearedBoard.children.length; b++) {
+          clearedBoard.children[b].removeEventListener('click', fieldClickEvent)
         }
+      }
+      function handleGameOver() {
         removeListenersFromBoard(document.getElementById('playerTwoBoard'))
         removeListenersFromBoard(document.getElementById('playerOneBoard'))
-        console.log(`game over, player ${currentPlayer} won`)
+        console.log(`game over, player ${currentPlayer.designation} won`)
       }
 
       if (player.type === 'human') {
@@ -368,9 +358,10 @@ const game = (() => {
             DOMManagement.handleFieldClick(event.target, targetedBoard, player)
             DOMManagement.updateBoardDisplay(boardPlayerOne)
             DOMManagement.updateBoardDisplay(boardPlayerTwo)
-            event.target.removeEventListener('click', fieldClickEvent)
-            console.log(targetedBoard.gameOverCheck())
-            if (targetedBoard.gameOverCheck()) {
+            removeListenersFromBoard(document.getElementById('playerTwoBoard'))
+            removeListenersFromBoard(document.getElementById('playerOneBoard'))
+
+            if (targetedBoard.gameOver) {
               handleGameOver(targetedBoardDOM)
             } else {
               currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
@@ -399,9 +390,11 @@ const game = (() => {
         //extract the below into a function
         DOMManagement.updateBoardDisplay(boardPlayerOne)
         DOMManagement.updateBoardDisplay(boardPlayerTwo)
-        if (targetedBoard.gameOverCheck()) {
+        console.log(targetedBoard)
+        if (targetedBoard.gameOver) {
           handleGameOver()
         } else {
+          console.log('not game over choice')
           currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
           makeMove(currentPlayer)
         }
