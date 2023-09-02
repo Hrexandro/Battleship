@@ -14,9 +14,7 @@
 // This function is appropriate for the Game module.
 
 
-
-//finish basic game loop
-//add random ship placement
+//add random ship placement - placeShipRandomly do this
 //add manual ship placement
 //put pointer cursor when on shootable field
 
@@ -116,31 +114,61 @@ function Gameboard(player = null, visible = true) {
       let attemptedStarterFields = []
       let board = this
 
-      function attemptPlacing() {
-        let coordsToFill = []
+      let coordsToFill = []//starting point of the ship we are about to place
+      let direction = null
 
-        //let randomField = this.fields[Math.floor(Math.random()*this.fields.length)]
-        coordsToFill.push([randomField.X, randomField.Y])
+
+      function attemptPlacing(currentField) {
+
+        if (!currentField){
+          currentField = board.fields[Math.floor(Math.random()*board.fields.length)]
+        }
+
+        console.log(currentField)
+
+        if (coordsToFill.length < 1){
+          //if this is the first field, mark it as one of the attempted beginnings
+          attemptedStarterFields.push(currentField.X.concat(currentField.Y))
+        }
+
+        coordsToFill.push([currentField.X, currentField.Y])
 
         let nearbyFields = []
 
-        let Xup = letters[letters.findIndex(e => e === randomField.X) + 1]
-        let Xdown = letters[letters.findIndex(e => e === randomField.X) - 1]
-        let Yup = randomField.Y + 1
-        let Ydown = randomField.Y - 1
+        let Xup = letters[letters.findIndex(e => e === currentField.X) + 1]
+        let Xdown = letters[letters.findIndex(e => e === currentField.X) - 1]
+        let Yup = currentField.Y + 1
+        let Ydown = currentField.Y - 1
         //also check if the field is not blocked before pushing
         if (letters.includes(Xup)) {
-          nearbyFields.push([Xup, randomField.Y])
+          nearbyFields.push([Xup, currentField.Y, "down"])
         }
         if (letters.includes(Xdown)) {
-          nearbyFields.push([Xdown, randomField.Y])
+          nearbyFields.push([Xdown, currentField.Y, "up"])
         }
         if (Yup < 10) {
-          nearbyFields.push([randomField.X, Yup])
+          nearbyFields.push([currentField.X, Yup, "right"])
         }
         if (Ydown > 0) {
-          nearbyFields.push([randomField.X, Ydown])
+          nearbyFields.push([currentField.X, Ydown, "left"])
         }
+        console.log(nearbyFields)
+
+
+        console.log(attemptedStarterFields)
+        //add one of the nearbyFields to coordsToFill
+        let nextField = nearbyFields[Math.floor(Math.random()*nearbyFields.length)]
+        coordsToFill.push(nextField)
+        console.log(coordsToFill)
+        if (!direction){
+          direction = nextField[3]
+        }
+        if (direction === "up"){
+          //continue with this
+        }
+        console.log(direction)
+
+
         //pick random nearbyField to add to coordsToFill
         //continue the same path, up or down for X or Y
         //for as long as size requires
@@ -288,9 +316,6 @@ const DOMManagement = (() => {
       }
     })
 
-    //id="playerTwoBoard"
-    //DO THIS NEXT
-
   }
 
   function handleFieldClick(clickedField, targetedBoard, attacker) {
@@ -325,7 +350,11 @@ const game = (() => {
     let playerTwo = Player('computer', 'T')
 
     let boardPlayerOne = Gameboard(playerOne)
+
     boardPlayerOne.addShip(['A', 1])
+    boardPlayerOne.placeShipRandomly(1)
+
+
     //boardPlayerOne.addShip(['B', 8])
     let boardPlayerTwo = Gameboard(playerTwo, false)//second argument is visibility
     boardPlayerTwo.addShip(['J', 10])
@@ -365,7 +394,7 @@ const game = (() => {
               handleGameOver(targetedBoardDOM)
             } else {
               currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-              setTimeout(makeMove, 1, currentPlayer);
+              setTimeout(makeMove, 500, currentPlayer);
             }
           }
         }
@@ -380,11 +409,8 @@ const game = (() => {
         //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
         let targetedBoard = boardPlayerOne
 
-        ///////////////////////////////////////////////////////////FOR TEST PURPOSES ONLY
-        player.attackBoard(targetedBoard, 'A', 1)
-        //////////////////////////////////////////////////////////////////
 
-        //player.randomAttack(targetedBoard)
+        player.randomAttack(targetedBoard)
 
 
         //extract the below into a function
