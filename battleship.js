@@ -164,6 +164,7 @@ function Gameboard(player = null, visible = true) {
           direction = nextField[3]
         }
         if (direction === "up"){
+
           //continue with this
         }
         console.log(direction)
@@ -182,6 +183,10 @@ function Gameboard(player = null, visible = true) {
 
       }
       attemptPlacing()
+      //take the coords from coordstofill
+      console.log("coordsToFill")
+      console.log(coordsToFill)
+      board.addShip(... coordsToFill)//make correct coordinates
 
     },
     receiveAttack(targetX, targetY) {
