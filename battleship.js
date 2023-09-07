@@ -66,7 +66,7 @@ function Gameboard(player = null, visible = true) {
       for (let i = 0; i < fieldsToFill.length; i++) {
         if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined) {
           throw "addShip - Invalid field"
-        } else if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this).blocked) {
+        } else if (!this.verifyIfFieldIsNotBlocked(fieldsToFill[i][0], fieldsToFill[i][1])) {
           throw "addShip - Blocked field"
         }
       }
@@ -109,6 +109,9 @@ function Gameboard(player = null, visible = true) {
         }
       }
     },
+    verifyIfFieldIsNotBlocked(Xcoord, Ycoord) {
+      return !findField(Xcoord, Ycoord, this).blocked
+    },
     placeShipRandomly(size) {
 
       let attemptedStarterFields = []
@@ -119,14 +122,27 @@ function Gameboard(player = null, visible = true) {
 
 
       function attemptPlacing(currentField) {
-
-        if (!currentField){
-          currentField = board.fields[Math.floor(Math.random()*board.fields.length)]
+        console.log(`current field is + ${JSON.stringify(currentField)}`)
+        // console.log("coordsToFill")
+        // console.log([0,1])
+        // console.log(coordsToFill)
+        // console.log(coordsToFill[0])
+        // console.log(coordsToFill.length)
+        // console.log(size)
+        // console.log(coordsToFill.length >= size)
+        console.log("func start check")
+        console.log(currentField)
+        if (coordsToFill.length >= size) {
+          console.log("should return")
+          return
+        }
+        if (!currentField) {
+          currentField = board.fields[Math.floor(Math.random() * board.fields.length)]
         }
 
-        console.log(currentField)
+        //console.log(currentField)
 
-        if (coordsToFill.length < 1){
+        if (coordsToFill.length < 1) {
           //if this is the first field, mark it as one of the attempted beginnings
           attemptedStarterFields.push(currentField.X.concat(currentField.Y))
         }
@@ -139,35 +155,94 @@ function Gameboard(player = null, visible = true) {
         let Xdown = letters[letters.findIndex(e => e === currentField.X) - 1]
         let Yup = currentField.Y + 1
         let Ydown = currentField.Y - 1
+
+        function checkFieldAdditionSuitability(checkedField){
+          if (letters.includes(checkedField[0])){
+            console.log("valid letter (X)")
+            console.log(checkedField[0])
+            if ((checkedField[1] < 10) && (checkedField[1] > 0)){
+              console.log("valid number (Y)")
+            }//continue along with this
+          }
+
+          console.log(letters.includes(checkedField[0]))
+          console.log(checkedField[1])
+          console.log(board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1]))
+          console.log(coordsToFill[0])
+
+  
+          console.log(coordsToFill.find(e => (e[0] === checkedField[0])))
+          console.log(coordsToFill.find((e) => (e[0] === checkedField[0]) && (e[1] === checkedField[1])))//something is wrong with this
+          // if (letters.includes(checkedField[0]) && (checkedField[1] < 10) && (checkedField[1] > 0) && board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1]) && (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1])))){
+          //   console.log("pushing")
+          //   console.log(checkedField)
+          //   nearbyFields.push(checkedField)//& check repeating in alredy filling!!!
+          //   console.log("nearby fields")
+          //   console.log(nearbyFields)
+          // }
+
+        }
+
         //also check if the field is not blocked before pushing
-        if (letters.includes(Xup)) {
-          nearbyFields.push([Xup, currentField.Y, "down"])
-        }
-        if (letters.includes(Xdown)) {
-          nearbyFields.push([Xdown, currentField.Y, "up"])
-        }
-        if (Yup < 10) {
-          nearbyFields.push([currentField.X, Yup, "right"])
-        }
-        if (Ydown > 0) {
-          nearbyFields.push([currentField.X, Ydown, "left"])
-        }
-        console.log(nearbyFields)
+        // console.log("before crash")
+        // console.log(currentField)
+        // console.log(Xup, currentField.Y)
+        console.log([Xup, currentField.Y, "down"])
+        checkFieldAdditionSuitability([Xup, currentField.Y, "down"])
+        console.log([Xdown, currentField.Y, "up"])
+        checkFieldAdditionSuitability([Xdown, currentField.Y, "up"])
+        console.log([Xdown, currentField.Y, "up"])
+        checkFieldAdditionSuitability([currentField.X, Yup, "right"])
+        console.log([currentField.X, Ydown, "left"])
+        checkFieldAdditionSuitability([currentField.X, Ydown, "left"])
 
 
-        console.log(attemptedStarterFields)
+        // if (letters.includes(Xup) && board.verifyIfFieldIsNotBlocked(Xup, currentField.Y)) {
+        //   nearbyFields.push([Xup, currentField.Y, "down"])
+        // }
+        // if (letters.includes(Xdown) && board.verifyIfFieldIsNotBlocked(Xdown, currentField.Y)) {
+        //   nearbyFields.push([Xdown, currentField.Y, "up"])
+        // }
+        // if (Yup < 10 && board.verifyIfFieldIsNotBlocked(currentField.X, Yup)) {
+        //   nearbyFields.push([currentField.X, Yup, "right"])
+        // }
+        // if (Ydown > 0 && board.verifyIfFieldIsNotBlocked(currentField.X, Ydown)) {
+        //   nearbyFields.push([currentField.X, Ydown, "left"])
+        // }
+        //console.log(nearbyFields)
+
+
+        //console.log(attemptedStarterFields)
         //add one of the nearbyFields to coordsToFill
-        let nextField = nearbyFields[Math.floor(Math.random()*nearbyFields.length)]
-        coordsToFill.push(nextField)
-        console.log(coordsToFill)
-        if (!direction){
+        //console.log(nearbyFields)
+
+
+        //TEMPORARY, change to directional later
+        let nextField = nearbyFields[Math.floor(Math.random() * nearbyFields.length)]
+        console.log("before weird field")
+        console.log(nearbyFields)
+        console.log(findField(nearbyFields[0], nearbyFields[1], board))
+
+        // //check if nextField is not already on the list
+        // function checkFieldDuplication() {
+        //   if (coordsToFill.find(e => (e[0] === nextField[0]) && (e[1] === nextField[1]))) {
+        //     return true
+        //   } else {
+        //     return false
+        //   }
+        // }
+
+        attemptPlacing(findField(nextField[0], nextField[1], board))
+        //coordsToFill.push(nextField)
+        //console.log(coordsToFill)
+        if (!direction) {
           direction = nextField[3]
         }
-        if (direction === "up"){
+        if (direction === "up") {
 
           //continue with this
         }
-        console.log(direction)
+        //console.log(direction)
 
 
         //pick random nearbyField to add to coordsToFill
@@ -184,9 +259,9 @@ function Gameboard(player = null, visible = true) {
       }
       attemptPlacing()
       //take the coords from coordstofill
-      console.log("coordsToFill")
+      console.log("final coordsToFill")
       console.log(coordsToFill)
-      board.addShip(... coordsToFill)//make correct coordinates
+      board.addShip(...coordsToFill)//make correct coordinates
 
     },
     receiveAttack(targetX, targetY) {
@@ -357,7 +432,7 @@ const game = (() => {
     let boardPlayerOne = Gameboard(playerOne)
 
     boardPlayerOne.addShip(['A', 1])
-    boardPlayerOne.placeShipRandomly(1)
+    boardPlayerOne.placeShipRandomly(3)
 
 
     //boardPlayerOne.addShip(['B', 8])
