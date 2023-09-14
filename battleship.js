@@ -13,6 +13,8 @@
 // Create conditions so that the game ends once one player’s ships have all been sunk.
 // This function is appropriate for the Game module.
 
+//verifyIfFieldIsNotBlocked lets through blocked fields for some reason
+//board display may deviate from the selected coords to be filled
 
 //add random ship placement - placeShipRandomly do this
 //add manual ship placement
@@ -67,6 +69,8 @@ function Gameboard(player = null, visible = true) {
         if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined) {
           throw "addShip - Invalid field"
         } else if (!this.verifyIfFieldIsNotBlocked(fieldsToFill[i][0], fieldsToFill[i][1])) {
+          console.log("the field is:")
+          console.log (fieldsToFill[i][0], fieldsToFill[i][1])
           throw "addShip - Blocked field"
         }
       }
@@ -122,22 +126,24 @@ function Gameboard(player = null, visible = true) {
 
 
       function attemptPlacing(currentField) {
-        console.log(`current field is + ${JSON.stringify(currentField)}`)
-        // console.log("coordsToFill")
-        // console.log([0,1])
-        // console.log(coordsToFill)
-        // console.log(coordsToFill[0])
-        // console.log(coordsToFill.length)
-        // console.log(size)
-        // console.log(coordsToFill.length >= size)
-        console.log("func start check")
         console.log(currentField)
         if (coordsToFill.length >= size) {
-          console.log("should return")
           return
         }
         if (!currentField) {
-          currentField = board.fields[Math.floor(Math.random() * board.fields.length)]
+          currentField = findNewRandomField()
+        }
+
+        function findNewRandomField(){//to roll recursively, in case the field was already tried
+          let returnedField = board.fields[Math.floor(Math.random() * board.fields.length)]
+          console.log("returned field")
+          console.log(returnedField)
+          if (!attemptedStarterFields.find(e => (e[0] == returnedField.X) && (e[1] == returnedField.Y))){
+            return returnedField
+          } else {
+            findNewRandomField()
+          }
+
         }
 
         //console.log(currentField)
@@ -162,17 +168,24 @@ function Gameboard(player = null, visible = true) {
             console.log(checkedField[0])
             if ((checkedField[1] < 10) && (checkedField[1] > 0)){
               console.log("valid number (Y)")
+              if (board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1])){
+                console.log("is not blocked")
+                if (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1]))){
+                  console.log("has not already been added to fill")
+                  nearbyFields.push(checkedField)
+                }
+              }
             }//continue along with this
           }
 
-          console.log(letters.includes(checkedField[0]))
-          console.log(checkedField[1])
-          console.log(board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1]))
-          console.log(coordsToFill[0])
+          // console.log(letters.includes(checkedField[0]))
+          // console.log(checkedField[1])
+          // console.log(board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1]))
+          // console.log(coordsToFill[0])
 
   
-          console.log(coordsToFill.find(e => (e[0] === checkedField[0])))
-          console.log(coordsToFill.find((e) => (e[0] === checkedField[0]) && (e[1] === checkedField[1])))//something is wrong with this
+          // console.log(coordsToFill.find(e => (e[0] === checkedField[0])))
+          // console.log(coordsToFill.find((e) => (e[0] === checkedField[0]) && (e[1] === checkedField[1])))//something is wrong with this
           // if (letters.includes(checkedField[0]) && (checkedField[1] < 10) && (checkedField[1] > 0) && board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1]) && (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1])))){
           //   console.log("pushing")
           //   console.log(checkedField)
@@ -432,7 +445,7 @@ const game = (() => {
     let boardPlayerOne = Gameboard(playerOne)
 
     boardPlayerOne.addShip(['A', 1])
-    boardPlayerOne.placeShipRandomly(3)
+    boardPlayerOne.placeShipRandomly(6)
 
 
     //boardPlayerOne.addShip(['B', 8])
