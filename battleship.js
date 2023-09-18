@@ -22,6 +22,9 @@
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
+//to delete after finishing random placement
+let testRandomlyFilledBoard = null
+
 function Ship(length = 1) {
   return {
     length,
@@ -126,25 +129,61 @@ function Gameboard(player = null, visible = true) {
 
 
       function attemptPlacing(currentField) {
+
+
+        function checkFieldAdditionSuitability(checkedField){//checkedField should be array of [X, Y]
+          if (letters.includes(checkedField[0])){
+            console.log("valid letter (X)")
+            console.log(checkedField[0])
+            if ((checkedField[1] < 10) && (checkedField[1] > 0)){
+              console.log("valid number (Y)")
+              console.log(checkedField[1])
+              if (board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1])){
+                console.log("is not blocked")
+                if (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1]))){
+                  console.log("has not already been added to fill")
+                  return checkedField
+
+                  //nearbyFields.push(checkedField)
+                }
+              }
+            }
+          } else {
+            return false
+          }
+
+        }
+
+        function findNewRandomField(){//to roll recursively, in case the field was already tried
+          let returnedField = board.fields[Math.floor(Math.random() * board.fields.length)]
+          if (!attemptedStarterFields.find(e => (e[0] == returnedField.X) && (e[1] == returnedField.Y))){
+            console.log('should return current randomField')
+            return returnedField
+          } else {
+            return findNewRandomField()
+          }
+
+        }
+
+        function recursivelyRandomlyFindSuitableField(){
+          let currentlyChecked = findNewRandomField()
+          if (checkFieldAdditionSuitability([currentlyChecked.X, currentlyChecked.Y])){
+            return currentlyChecked
+          } else {
+            return recursivelyRandomlyFindSuitableField()
+          }
+        }
+
+
         console.log(currentField)
         if (coordsToFill.length >= size) {
           return
         }
         if (!currentField) {
-          currentField = findNewRandomField()
+          currentField = recursivelyRandomlyFindSuitableField()
         }
 
-        function findNewRandomField(){//to roll recursively, in case the field was already tried
-          let returnedField = board.fields[Math.floor(Math.random() * board.fields.length)]
-          console.log("returned field")
-          console.log(returnedField)
-          if (!attemptedStarterFields.find(e => (e[0] == returnedField.X) && (e[1] == returnedField.Y))){
-            return returnedField
-          } else {
-            findNewRandomField()
-          }
 
-        }
 
         //console.log(currentField)
 
@@ -162,72 +201,22 @@ function Gameboard(player = null, visible = true) {
         let Yup = currentField.Y + 1
         let Ydown = currentField.Y - 1
 
-        function checkFieldAdditionSuitability(checkedField){
-          if (letters.includes(checkedField[0])){
-            console.log("valid letter (X)")
-            console.log(checkedField[0])
-            if ((checkedField[1] < 10) && (checkedField[1] > 0)){
-              console.log("valid number (Y)")
-              if (board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1])){
-                console.log("is not blocked")
-                if (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1]))){
-                  console.log("has not already been added to fill")
-                  nearbyFields.push(checkedField)
-                }
-              }
-            }//continue along with this
+
+        function addToNearbyFieldsIfSuitable(fieldToCheckAndAdd){
+          if (checkFieldAdditionSuitability(fieldToCheckAndAdd)){
+            nearbyFields.push(fieldToCheckAndAdd)
           }
-
-          // console.log(letters.includes(checkedField[0]))
-          // console.log(checkedField[1])
-          // console.log(board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1]))
-          // console.log(coordsToFill[0])
-
-  
-          // console.log(coordsToFill.find(e => (e[0] === checkedField[0])))
-          // console.log(coordsToFill.find((e) => (e[0] === checkedField[0]) && (e[1] === checkedField[1])))//something is wrong with this
-          // if (letters.includes(checkedField[0]) && (checkedField[1] < 10) && (checkedField[1] > 0) && board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1]) && (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1])))){
-          //   console.log("pushing")
-          //   console.log(checkedField)
-          //   nearbyFields.push(checkedField)//& check repeating in alredy filling!!!
-          //   console.log("nearby fields")
-          //   console.log(nearbyFields)
-          // }
-
         }
 
-        //also check if the field is not blocked before pushing
-        // console.log("before crash")
-        // console.log(currentField)
-        // console.log(Xup, currentField.Y)
         console.log([Xup, currentField.Y, "down"])
-        checkFieldAdditionSuitability([Xup, currentField.Y, "down"])
+        addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "up"])
         console.log([Xdown, currentField.Y, "up"])
-        checkFieldAdditionSuitability([Xdown, currentField.Y, "up"])
+        addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "up"])
         console.log([Xdown, currentField.Y, "up"])
-        checkFieldAdditionSuitability([currentField.X, Yup, "right"])
+        addToNearbyFieldsIfSuitable([currentField.X, Yup, "right"])
         console.log([currentField.X, Ydown, "left"])
-        checkFieldAdditionSuitability([currentField.X, Ydown, "left"])
+        addToNearbyFieldsIfSuitable([currentField.X, Ydown, "left"])
 
-
-        // if (letters.includes(Xup) && board.verifyIfFieldIsNotBlocked(Xup, currentField.Y)) {
-        //   nearbyFields.push([Xup, currentField.Y, "down"])
-        // }
-        // if (letters.includes(Xdown) && board.verifyIfFieldIsNotBlocked(Xdown, currentField.Y)) {
-        //   nearbyFields.push([Xdown, currentField.Y, "up"])
-        // }
-        // if (Yup < 10 && board.verifyIfFieldIsNotBlocked(currentField.X, Yup)) {
-        //   nearbyFields.push([currentField.X, Yup, "right"])
-        // }
-        // if (Ydown > 0 && board.verifyIfFieldIsNotBlocked(currentField.X, Ydown)) {
-        //   nearbyFields.push([currentField.X, Ydown, "left"])
-        // }
-        //console.log(nearbyFields)
-
-
-        //console.log(attemptedStarterFields)
-        //add one of the nearbyFields to coordsToFill
-        //console.log(nearbyFields)
 
 
         //TEMPORARY, change to directional later
@@ -349,6 +338,7 @@ function Player(type = 'human', designation = null) {//later add intelligent tar
 
 const DOMManagement = (() => {
   const computerPlayButton = document.getElementById('computer-play-button')
+  console.log(computerPlayButton)
   computerPlayButton.addEventListener('click', () => {
     displayBoard('player-one-area', 'playerOneBoard')
     displayBoard('player-two-area', 'playerTwoBoard')
@@ -447,7 +437,7 @@ const game = (() => {
     boardPlayerOne.addShip(['A', 1])
     boardPlayerOne.placeShipRandomly(6)
 
-
+    testRandomlyFilledBoard = boardPlayerOne
     //boardPlayerOne.addShip(['B', 8])
     let boardPlayerTwo = Gameboard(playerTwo, false)//second argument is visibility
     boardPlayerTwo.addShip(['J', 10])
