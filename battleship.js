@@ -13,17 +13,25 @@
 // Create conditions so that the game ends once one player’s ships have all been sunk.
 // This function is appropriate for the Game module.
 
-//verifyIfFieldIsNotBlocked lets through blocked fields for some reason
-//board display may deviate from the selected coords to be filled
 
 //add random ship placement - placeShipRandomly do this
 //add manual ship placement
 //put pointer cursor when on shootable field
 
+
+
+//CURRENT ISSUES
+
+//sometimes one field fom the random placement does not have a ship placed in it
+//in both the display and the code; happens generally on the side of the board
+
+//somethimes there is an error, because nextField and nearbyFields are empty for some reason
+
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
 //to delete after finishing random placement
 let testRandomlyFilledBoard = null
+let verifiedBoardState = null
 
 function Ship(length = 1) {
   return {
@@ -65,8 +73,13 @@ function Gameboard(player = null, visible = true) {
     fields: createEmptyBoard(),
     gameOver: false,
     addShip(...args) {//ex. (["A", 1], ["B", 1])
+      console.log("args are")
+      console.log(args)
+      console.log(...args)
       let newShip = Ship(args.length);
       let fieldsToFill = args
+      console.log("fields to fill are")
+      console.log(fieldsToFill)
       //check if fields are blocked
       for (let i = 0; i < fieldsToFill.length; i++) {
         if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined) {
@@ -121,7 +134,7 @@ function Gameboard(player = null, visible = true) {
     },
     placeShipRandomly(size) {
 
-      let attemptedStarterFields = []
+      let attemptedStarterFields = []//check this as well
       let board = this
 
       let coordsToFill = []//starting point of the ship we are about to place
@@ -168,6 +181,8 @@ function Gameboard(player = null, visible = true) {
         function recursivelyRandomlyFindSuitableField(){
           let currentlyChecked = findNewRandomField()
           if (checkFieldAdditionSuitability([currentlyChecked.X, currentlyChecked.Y])){
+            console.log("recursivelyRandomlyFindSuitableField is returning")
+            console.log(currentlyChecked)
             return currentlyChecked
           } else {
             return recursivelyRandomlyFindSuitableField()
@@ -180,7 +195,12 @@ function Gameboard(player = null, visible = true) {
           return
         }
         if (!currentField) {
-          currentField = recursivelyRandomlyFindSuitableField()
+          //!!!!
+          //for test purposes we are starting at the problematic border area
+          currentField = findField("F", 1, board)
+          //currentField = recursivelyRandomlyFindSuitableField()
+          console.log("!!!!!")
+          console.log(currentField)
         }
 
 
@@ -203,6 +223,8 @@ function Gameboard(player = null, visible = true) {
 
 
         function addToNearbyFieldsIfSuitable(fieldToCheckAndAdd){
+          console.log("addToNearbyFieldsIfSuitable is checking")
+          console.log(fieldToCheckAndAdd)
           if (checkFieldAdditionSuitability(fieldToCheckAndAdd)){
             nearbyFields.push(fieldToCheckAndAdd)
           }
@@ -221,30 +243,32 @@ function Gameboard(player = null, visible = true) {
 
         //TEMPORARY, change to directional later
         let nextField = nearbyFields[Math.floor(Math.random() * nearbyFields.length)]
-        console.log("before weird field")
+        console.log("next field, then nearbyFields logged below")
+        console.log(nextField)
         console.log(nearbyFields)
         console.log(findField(nearbyFields[0], nearbyFields[1], board))
 
-        // //check if nextField is not already on the list
-        // function checkFieldDuplication() {
-        //   if (coordsToFill.find(e => (e[0] === nextField[0]) && (e[1] === nextField[1]))) {
-        //     return true
-        //   } else {
-        //     return false
-        //   }
-        // }
 
-        attemptPlacing(findField(nextField[0], nextField[1], board))
-        //coordsToFill.push(nextField)
-        //console.log(coordsToFill)
-        if (!direction) {
-          direction = nextField[3]
+        //check if something horribly wrong has happened - nextField is empty yet here we are
+        if (!nextField){
+          console.log("restarting due to something going horribly wrong")
+          coordsToFill = []
+          nearbyFields = []
+          attemptPlacing()
+        } else {
+          attemptPlacing(findField(nextField[0], nextField[1], board))
+          //coordsToFill.push(nextField)
+          //console.log(coordsToFill)
+          if (!direction) {
+            direction = nextField[3]
+          }
+          if (direction === "up") {
+  
+            //continue with this
+          }
+          //console.log(direction)
         }
-        if (direction === "up") {
 
-          //continue with this
-        }
-        //console.log(direction)
 
 
         //pick random nearbyField to add to coordsToFill
@@ -262,7 +286,8 @@ function Gameboard(player = null, visible = true) {
       attemptPlacing()
       //take the coords from coordstofill
       console.log("final coordsToFill")
-      console.log(coordsToFill)
+      console.log(coordsToFill)//one of the fields is lost between those, it is here, but not inside addShip
+      console.log(...coordsToFill)
       board.addShip(...coordsToFill)//make correct coordinates
 
     },
@@ -436,6 +461,7 @@ const game = (() => {
 
     boardPlayerOne.addShip(['A', 1])
     boardPlayerOne.placeShipRandomly(6)
+    verifiedBoardState = boardPlayerOne
 
     testRandomlyFilledBoard = boardPlayerOne
     //boardPlayerOne.addShip(['B', 8])
