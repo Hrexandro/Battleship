@@ -18,20 +18,11 @@
 //add manual ship placement
 //put pointer cursor when on shootable field
 
-
-
-//CURRENT ISSUES
-
-//sometimes one field fom the random placement does not have a ship placed in it
-//in both the display and the code; happens generally on the side of the board
-
-//somethimes there is an error, because nextField and nearbyFields are empty for some reason
+//PROCEED WITH DIRECTIONAL PLACEMENT
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
-//to delete after finishing random placement
-let testRandomlyFilledBoard = null
-let verifiedBoardState = null
+
 
 function Ship(length = 1) {
   return {
@@ -73,13 +64,8 @@ function Gameboard(player = null, visible = true) {
     fields: createEmptyBoard(),
     gameOver: false,
     addShip(...args) {//ex. (["A", 1], ["B", 1])
-      console.log("args are")
-      console.log(args)
-      console.log(...args)
       let newShip = Ship(args.length);
       let fieldsToFill = args
-      console.log("fields to fill are")
-      console.log(fieldsToFill)
       //check if fields are blocked
       for (let i = 0; i < fieldsToFill.length; i++) {
         if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined) {
@@ -122,8 +108,9 @@ function Gameboard(player = null, visible = true) {
             blockSurroundingFields(1, -1)
             blockSurroundingFields(1, 0)
             blockSurroundingFields(1, 1)
+            //splicing probably not necessary
+            //fieldsToFill.splice(j, 1)
 
-            fieldsToFill.splice(i, 1)
             break
           }
         }
@@ -142,22 +129,21 @@ function Gameboard(player = null, visible = true) {
 
 
       function attemptPlacing(currentField) {
-
+        console.log("attempt placing starts, with parameter:")
+        console.log(currentField)
 
         function checkFieldAdditionSuitability(checkedField){//checkedField should be array of [X, Y]
           if (letters.includes(checkedField[0])){
-            console.log("valid letter (X)")
-            console.log(checkedField[0])
+            //console.log("valid letter (X)")
+            //console.log(checkedField[0])
             if ((checkedField[1] < 10) && (checkedField[1] > 0)){
-              console.log("valid number (Y)")
-              console.log(checkedField[1])
+             // console.log("valid number (Y)")
+              //console.log(checkedField[1])
               if (board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1])){
-                console.log("is not blocked")
+               // console.log("is not blocked")
                 if (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1]))){
-                  console.log("has not already been added to fill")
+                 // console.log("has not already been added to fill")
                   return checkedField
-
-                  //nearbyFields.push(checkedField)
                 }
               }
             }
@@ -170,7 +156,6 @@ function Gameboard(player = null, visible = true) {
         function findNewRandomField(){//to roll recursively, in case the field was already tried
           let returnedField = board.fields[Math.floor(Math.random() * board.fields.length)]
           if (!attemptedStarterFields.find(e => (e[0] == returnedField.X) && (e[1] == returnedField.Y))){
-            console.log('should return current randomField')
             return returnedField
           } else {
             return findNewRandomField()
@@ -181,8 +166,6 @@ function Gameboard(player = null, visible = true) {
         function recursivelyRandomlyFindSuitableField(){
           let currentlyChecked = findNewRandomField()
           if (checkFieldAdditionSuitability([currentlyChecked.X, currentlyChecked.Y])){
-            console.log("recursivelyRandomlyFindSuitableField is returning")
-            console.log(currentlyChecked)
             return currentlyChecked
           } else {
             return recursivelyRandomlyFindSuitableField()
@@ -190,25 +173,18 @@ function Gameboard(player = null, visible = true) {
         }
 
 
-        console.log(currentField)
         if (coordsToFill.length >= size) {
           return
         }
         if (!currentField) {
-          //!!!!
-          //for test purposes we are starting at the problematic border area
-          currentField = findField("F", 1, board)
-          //currentField = recursivelyRandomlyFindSuitableField()
-          console.log("!!!!!")
-          console.log(currentField)
+          currentField = recursivelyRandomlyFindSuitableField()
+
         }
 
 
 
-        //console.log(currentField)
-
         if (coordsToFill.length < 1) {
-          //if this is the first field, mark it as one of the attempted beginnings
+          //!!!if this is the first field, mark it as one of the attempted beginnings
           attemptedStarterFields.push(currentField.X.concat(currentField.Y))
         }
 
@@ -223,30 +199,28 @@ function Gameboard(player = null, visible = true) {
 
 
         function addToNearbyFieldsIfSuitable(fieldToCheckAndAdd){
-          console.log("addToNearbyFieldsIfSuitable is checking")
-          console.log(fieldToCheckAndAdd)
           if (checkFieldAdditionSuitability(fieldToCheckAndAdd)){
             nearbyFields.push(fieldToCheckAndAdd)
           }
         }
 
-        console.log([Xup, currentField.Y, "down"])
+        //console.log([Xup, currentField.Y, "down"])
         addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "up"])
-        console.log([Xdown, currentField.Y, "up"])
+       // console.log([Xdown, currentField.Y, "up"])
         addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "up"])
-        console.log([Xdown, currentField.Y, "up"])
+        //console.log([Xdown, currentField.Y, "up"])
         addToNearbyFieldsIfSuitable([currentField.X, Yup, "right"])
-        console.log([currentField.X, Ydown, "left"])
+        //console.log([currentField.X, Ydown, "left"])
         addToNearbyFieldsIfSuitable([currentField.X, Ydown, "left"])
 
 
 
-        //TEMPORARY, change to directional later
+        //!!!TEMPORARY, change to directional later
         let nextField = nearbyFields[Math.floor(Math.random() * nearbyFields.length)]
-        console.log("next field, then nearbyFields logged below")
-        console.log(nextField)
-        console.log(nearbyFields)
-        console.log(findField(nearbyFields[0], nearbyFields[1], board))
+        // console.log("next field, then nearbyFields logged below")
+        // console.log(nextField)
+        // console.log(nearbyFields)
+        // console.log(findField(nearbyFields[0], nearbyFields[1], board))
 
 
         //check if something horribly wrong has happened - nextField is empty yet here we are
@@ -256,9 +230,9 @@ function Gameboard(player = null, visible = true) {
           nearbyFields = []
           attemptPlacing()
         } else {
+
           attemptPlacing(findField(nextField[0], nextField[1], board))
-          //coordsToFill.push(nextField)
-          //console.log(coordsToFill)
+
           if (!direction) {
             direction = nextField[3]
           }
@@ -285,9 +259,6 @@ function Gameboard(player = null, visible = true) {
       }
       attemptPlacing()
       //take the coords from coordstofill
-      console.log("final coordsToFill")
-      console.log(coordsToFill)//one of the fields is lost between those, it is here, but not inside addShip
-      console.log(...coordsToFill)
       board.addShip(...coordsToFill)//make correct coordinates
 
     },
@@ -363,7 +334,7 @@ function Player(type = 'human', designation = null) {//later add intelligent tar
 
 const DOMManagement = (() => {
   const computerPlayButton = document.getElementById('computer-play-button')
-  console.log(computerPlayButton)
+  //console.log(computerPlayButton)
   computerPlayButton.addEventListener('click', () => {
     displayBoard('player-one-area', 'playerOneBoard')
     displayBoard('player-two-area', 'playerTwoBoard')
@@ -525,11 +496,11 @@ const game = (() => {
         //extract the below into a function
         DOMManagement.updateBoardDisplay(boardPlayerOne)
         DOMManagement.updateBoardDisplay(boardPlayerTwo)
-        console.log(targetedBoard)
+        //console.log(targetedBoard)
         if (targetedBoard.gameOver) {
           handleGameOver()
         } else {
-          console.log('not game over choice')
+          //console.log('not game over choice')
           currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
           makeMove(currentPlayer)
         }
