@@ -13,7 +13,6 @@
 // Create conditions so that the game ends once one player’s ships have all been sunk.
 // This function is appropriate for the Game module.
 
-
 //add random ship placement - placeShipRandomly do this
 //add manual ship placement
 //put pointer cursor when on shootable field
@@ -21,8 +20,6 @@
 //PROCEED WITH DIRECTIONAL PLACEMENT
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-
-
 
 function Ship(length = 1) {
   return {
@@ -51,7 +48,7 @@ function Gameboard(player = null, visible = true) {
           Y: i,
           ship: false,
           hit: false,
-          blocked: false
+          blocked: false,
         });
       }
     }
@@ -63,187 +60,236 @@ function Gameboard(player = null, visible = true) {
     visible,
     fields: createEmptyBoard(),
     gameOver: false,
-    addShip(...args) {//ex. (["A", 1], ["B", 1])
+    addShip(...args) {
+      //ex. (["A", 1], ["B", 1])
       let newShip = Ship(args.length);
-      let fieldsToFill = args
+      let fieldsToFill = args;
       //check if fields are blocked
       for (let i = 0; i < fieldsToFill.length; i++) {
-        if (findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined) {
-          throw "addShip - Invalid field"
-        } else if (!this.verifyIfFieldIsNotBlocked(fieldsToFill[i][0], fieldsToFill[i][1])) {
-          console.log("the field is:")
-          console.log (fieldsToFill[i][0], fieldsToFill[i][1])
-          throw "addShip - Blocked field"
+        if (
+          findField(fieldsToFill[i][0], fieldsToFill[i][1], this) === undefined
+        ) {
+          throw "addShip - Invalid field";
+        } else if (
+          !this.verifyIfFieldIsNotBlocked(
+            fieldsToFill[i][0],
+            fieldsToFill[i][1]
+          )
+        ) {
+          console.log("the field is:");
+          console.log(fieldsToFill[i][0], fieldsToFill[i][1]);
+          throw "addShip - Blocked field";
         }
       }
 
       for (let i = 0; i < this.fields.length; i++) {
         for (let j = 0; j < fieldsToFill.length; j++) {
-          if ((this.fields[i].X === fieldsToFill[j][0]) && (this.fields[i].Y === fieldsToFill[j][1])) {
-            this.fields[i].ship = newShip
-            this.fields[i].blocked = true
-            let currentX = this.fields[i].X
-            let currentY = this.fields[i].Y
+          if (
+            this.fields[i].X === fieldsToFill[j][0] &&
+            this.fields[i].Y === fieldsToFill[j][1]
+          ) {
+            this.fields[i].ship = newShip;
+            this.fields[i].blocked = true;
+            let currentX = this.fields[i].X;
+            let currentY = this.fields[i].Y;
 
-            let board = this
+            let board = this;
 
             function blockSurroundingFields(Xmodifier, Ymodifier) {
-              let XtoBeBlocked = letters[letters.findIndex(e => e === currentX) + Xmodifier]
+              let XtoBeBlocked =
+                letters[letters.findIndex((e) => e === currentX) + Xmodifier];
               if (XtoBeBlocked) {
-                let YtoBeBlocked = currentY + Ymodifier
+                let YtoBeBlocked = currentY + Ymodifier;
 
-                if ((YtoBeBlocked < 11) && (YtoBeBlocked > 0)) {
-                  findField(XtoBeBlocked, YtoBeBlocked, board).blocked = true
+                if (YtoBeBlocked < 11 && YtoBeBlocked > 0) {
+                  findField(XtoBeBlocked, YtoBeBlocked, board).blocked = true;
                 }
               }
             }
 
-            blockSurroundingFields(-1, -1)
-            blockSurroundingFields(-1, 0)
-            blockSurroundingFields(-1, 1)
+            blockSurroundingFields(-1, -1);
+            blockSurroundingFields(-1, 0);
+            blockSurroundingFields(-1, 1);
 
-            blockSurroundingFields(0, -1)
-            blockSurroundingFields(0, 1)
+            blockSurroundingFields(0, -1);
+            blockSurroundingFields(0, 1);
 
-            blockSurroundingFields(1, -1)
-            blockSurroundingFields(1, 0)
-            blockSurroundingFields(1, 1)
+            blockSurroundingFields(1, -1);
+            blockSurroundingFields(1, 0);
+            blockSurroundingFields(1, 1);
             //splicing probably not necessary
             //fieldsToFill.splice(j, 1)
 
-            break
+            break;
           }
         }
       }
     },
     verifyIfFieldIsNotBlocked(Xcoord, Ycoord) {
-      return !findField(Xcoord, Ycoord, this).blocked
+      return !findField(Xcoord, Ycoord, this).blocked;
     },
     placeShipRandomly(size) {
+      let attemptedStarterFields = []; //check this as well
+      let board = this;
 
-      let attemptedStarterFields = []//check this as well
-      let board = this
-
-      let coordsToFill = []//starting point of the ship we are about to place
-      let direction = null
-
+      let coordsToFill = []; //starting point of the ship we are about to place
+      let direction = null;
+      let nextField = null
 
       function attemptPlacing(currentField) {
-        console.log("attempt placing starts, with parameter:")
+        console.log("attempt placing starts, with parameter:");
+        console.log(currentField);
+
+        console.log("current direction is")
+        console.log(direction)
+        console.log("current field is")
         console.log(currentField)
 
-        function checkFieldAdditionSuitability(checkedField){//checkedField should be array of [X, Y]
-          if (letters.includes(checkedField[0])){
+        let Xup = null
+        let Xdown = null
+        let Yup = null
+        let Ydown = null
+
+        function defineDirectionalVariables(){
+          Xup = letters[letters.findIndex((e) => e === currentField.X) + 1];
+          Xdown =
+            letters[letters.findIndex((e) => e === currentField.X) - 1];
+          Yup = currentField.Y + 1;
+          Ydown = currentField.Y - 1;
+        }
+
+        if (currentField){
+          defineDirectionalVariables()
+        }
+        
+        function checkFieldAdditionSuitability(checkedField) {
+          //checkedField should be array of [X, Y]
+          if (letters.includes(checkedField[0])) {
             //console.log("valid letter (X)")
             //console.log(checkedField[0])
-            if ((checkedField[1] < 10) && (checkedField[1] > 0)){
-             // console.log("valid number (Y)")
+            if (checkedField[1] < 10 && checkedField[1] > 0) {
+              // console.log("valid number (Y)")
               //console.log(checkedField[1])
-              if (board.verifyIfFieldIsNotBlocked(checkedField[0], checkedField[1])){
-               // console.log("is not blocked")
-                if (!coordsToFill.find(e => (e[0] === checkedField[0]) && (e[1] === checkedField[1]))){
-                 // console.log("has not already been added to fill")
-                  return checkedField
+              if (
+                board.verifyIfFieldIsNotBlocked(
+                  checkedField[0],
+                  checkedField[1]
+                )
+              ) {
+                // console.log("is not blocked")
+                if (
+                  !coordsToFill.find(
+                    (e) =>
+                      e[0] === checkedField[0] && e[1] === checkedField[1]
+                  )
+                ) {
+                  // console.log("has not already been added to fill")
+                  return checkedField;
                 }
               }
             }
           } else {
-            return false
+            return false;
           }
-
         }
-
-        function findNewRandomField(){//to roll recursively, in case the field was already tried
-          let returnedField = board.fields[Math.floor(Math.random() * board.fields.length)]
-          if (!attemptedStarterFields.find(e => (e[0] == returnedField.X) && (e[1] == returnedField.Y))){
-            return returnedField
+        if (direction === "up") {
+          console.log("direction is up")
+          if (checkFieldAdditionSuitability([Xdown, currentField.Y, "up"])){
+            console.log("moving up from" + JSON.stringify(currentField))
+            nextField = findField(currentField.X, curr, board)
           } else {
-            return findNewRandomField()
+            nextField = null
           }
-
-        }
-
-        function recursivelyRandomlyFindSuitableField(){
-          let currentlyChecked = findNewRandomField()
-          if (checkFieldAdditionSuitability([currentlyChecked.X, currentlyChecked.Y])){
-            return currentlyChecked
-          } else {
-            return recursivelyRandomlyFindSuitableField()
-          }
-        }
-
-
-        if (coordsToFill.length >= size) {
-          return
-        }
-        if (!currentField) {
-          currentField = recursivelyRandomlyFindSuitableField()
-
-        }
-
-
-
-        if (coordsToFill.length < 1) {
-          //!!!if this is the first field, mark it as one of the attempted beginnings
-          attemptedStarterFields.push(currentField.X.concat(currentField.Y))
-        }
-
-        coordsToFill.push([currentField.X, currentField.Y])
-
-        let nearbyFields = []
-
-        let Xup = letters[letters.findIndex(e => e === currentField.X) + 1]
-        let Xdown = letters[letters.findIndex(e => e === currentField.X) - 1]
-        let Yup = currentField.Y + 1
-        let Ydown = currentField.Y - 1
-
-
-        function addToNearbyFieldsIfSuitable(fieldToCheckAndAdd){
-          if (checkFieldAdditionSuitability(fieldToCheckAndAdd)){
-            nearbyFields.push(fieldToCheckAndAdd)
-          }
-        }
-
-        //console.log([Xup, currentField.Y, "down"])
-        addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "up"])
-       // console.log([Xdown, currentField.Y, "up"])
-        addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "up"])
-        //console.log([Xdown, currentField.Y, "up"])
-        addToNearbyFieldsIfSuitable([currentField.X, Yup, "right"])
-        //console.log([currentField.X, Ydown, "left"])
-        addToNearbyFieldsIfSuitable([currentField.X, Ydown, "left"])
-
-
-
-        //!!!TEMPORARY, change to directional later
-        let nextField = nearbyFields[Math.floor(Math.random() * nearbyFields.length)]
-        // console.log("next field, then nearbyFields logged below")
-        // console.log(nextField)
-        // console.log(nearbyFields)
-        // console.log(findField(nearbyFields[0], nearbyFields[1], board))
-
-
-        //check if something horribly wrong has happened - nextField is empty yet here we are
-        if (!nextField){
-          console.log("restarting due to something going horribly wrong")
-          coordsToFill = []
-          nearbyFields = []
-          attemptPlacing()
+          
         } else {
 
-          attemptPlacing(findField(nextField[0], nextField[1], board))
+          function findNewRandomField() {
+            //to roll recursively, in case the field was already tried
+            let returnedField =
+              board.fields[Math.floor(Math.random() * board.fields.length)];
+            if (
+              !attemptedStarterFields.find(
+                (e) => e[0] == returnedField.X && e[1] == returnedField.Y
+              )
+            ) {
+              return returnedField;
+            } else {
+              return findNewRandomField();
+            }
+          }
 
-          if (!direction) {
-            direction = nextField[3]
+          function recursivelyRandomlyFindSuitableField() {
+            let currentlyChecked = findNewRandomField();
+            if (
+              checkFieldAdditionSuitability([
+                currentlyChecked.X,
+                currentlyChecked.Y,
+              ])
+            ) {
+              return currentlyChecked;
+            } else {
+              return recursivelyRandomlyFindSuitableField();
+            }
           }
-          if (direction === "up") {
-  
-            //continue with this
+
+          if (coordsToFill.length >= size) {
+            return;
           }
+          if (!currentField) {
+            currentField = recursivelyRandomlyFindSuitableField();
+            defineDirectionalVariables()
+          }
+
+          if (coordsToFill.length < 1) {
+            //!!!if this is the first field, mark it as one of the attempted beginnings
+            attemptedStarterFields.push(currentField.X.concat(currentField.Y));
+          }
+
+          coordsToFill.push([currentField.X, currentField.Y]);
+
+          let nearbyFields = [];
+
+
+
+          function addToNearbyFieldsIfSuitable(fieldToCheckAndAdd) {
+            if (checkFieldAdditionSuitability(fieldToCheckAndAdd)) {
+              nearbyFields.push(fieldToCheckAndAdd);
+            }
+          }
+
+          //console.log([Xup, currentField.Y, "down"])
+          addToNearbyFieldsIfSuitable([Xup, currentField.Y, "up"]);
+          // console.log([Xdown, currentField.Y, "up"])
+          addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "down"]);
+          //console.log([Xdown, currentField.Y, "up"])
+          addToNearbyFieldsIfSuitable([currentField.X, Yup, "right"]);
+          //console.log([currentField.X, Ydown, "left"])
+          addToNearbyFieldsIfSuitable([currentField.X, Ydown, "left"]);
+
+          //!!!TEMPORARY, change to directional later
+          nextField = nearbyFields[Math.floor(Math.random() * nearbyFields.length)];
+          // console.log("next field, then nearbyFields logged below")
+          // console.log(nextField)
+          // console.log(nearbyFields)
+          // console.log(findField(nearbyFields[0], nearbyFields[1], board))
+
+          //check if something horribly wrong has happened - nextField is empty yet here we are
+        }
+        if (!nextField) {
+          console.log("restarting due to something going horribly wrong");
+          coordsToFill = [];
+          nearbyFields = [];
+          nextField = null;
+          attemptPlacing();
+        } else {
+          console.log("defining direction: nextField, direction")
+          console.log(nextField)
+          direction = nextField[2];
+          console.log(direction)
+          attemptPlacing(findField(nextField[0], nextField[1], board));
+
           //console.log(direction)
         }
-
-
 
         //pick random nearbyField to add to coordsToFill
         //continue the same path, up or down for X or Y
@@ -255,55 +301,52 @@ function Gameboard(player = null, visible = true) {
         //if too many retries fail (81) = throw error
 
         //place ships //ex. addShip(["A", 1], ["B", 1])
-
       }
-      attemptPlacing()
+      attemptPlacing();
       //take the coords from coordstofill
-      board.addShip(...coordsToFill)//make correct coordinates
-
+      board.addShip(...coordsToFill); //make correct coordinates
     },
     receiveAttack(targetX, targetY) {
-      let attackedField = findField(targetX, targetY, this)
+      let attackedField = findField(targetX, targetY, this);
       if (attackedField.ship) {
-        attackedField.ship.hit()
+        attackedField.ship.hit();
       }
-      attackedField.hit = true
+      attackedField.hit = true;
       if (this.gameOverCheck()) {
-        this.gameOver = true
+        this.gameOver = true;
       }
     },
     gameOverCheck() {
-      let unsunkShips = []
+      let unsunkShips = [];
       for (let field in this.fields) {
         if (this.fields[field].ship) {
           if (!this.fields[field].ship.sunk) {
-            unsunkShips.push(this.fields[field].ship)
+            unsunkShips.push(this.fields[field].ship);
           }
         }
       }
       if (unsunkShips.length < 1) {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
-
     },
     checkFieldHitStatus(X, Y) {
       if (findField(X, Y, this).hit) {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
-    }
+    },
   };
 }
 
-
 function findField(coordX, coordY, board) {
-  return board.fields.find(e => (e.X == coordX) && (e.Y == coordY))
+  return board.fields.find((e) => e.X == coordX && e.Y == coordY);
 }
 
-function Player(type = 'human', designation = null) {//later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
+function Player(type = "human", designation = null) {
+  //later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
   return {
     type,
     designation,
@@ -311,103 +354,100 @@ function Player(type = 'human', designation = null) {//later add intelligent tar
       if (!findField(X, Y, board).hit) {
         let explosion = new Audio("explosion.mp3");
         explosion.play();
-        board.receiveAttack(X, Y)
-      }
-      else {
-        return false
+        board.receiveAttack(X, Y);
+      } else {
+        return false;
       }
     },
     randomAttack(board) {
-      let fieldsNotAttackedYet = board.fields.filter(f => f.hit === false)
+      let fieldsNotAttackedYet = board.fields.filter((f) => f.hit === false);
       if (fieldsNotAttackedYet.length !== 0) {
-        let target = fieldsNotAttackedYet[Math.floor(Math.random() * fieldsNotAttackedYet.length)]
-        this.attackBoard(board, target.X, target.Y)
+        let target =
+          fieldsNotAttackedYet[
+            Math.floor(Math.random() * fieldsNotAttackedYet.length)
+          ];
+        this.attackBoard(board, target.X, target.Y);
       } else {
-        return
+        return;
       }
-    }
-
-  }
-
+    },
+  };
 }
 
-
 const DOMManagement = (() => {
-  const computerPlayButton = document.getElementById('computer-play-button')
+  const computerPlayButton = document.getElementById("computer-play-button");
   //console.log(computerPlayButton)
-  computerPlayButton.addEventListener('click', () => {
-    displayBoard('player-one-area', 'playerOneBoard')
-    displayBoard('player-two-area', 'playerTwoBoard')
-    document.getElementById('centered-button-container').remove()
-    game.startGame()
-  })
+  computerPlayButton.addEventListener("click", () => {
+    displayBoard("player-one-area", "playerOneBoard");
+    displayBoard("player-two-area", "playerTwoBoard");
+    document.getElementById("centered-button-container").remove();
+    game.startGame();
+  });
 
   function displayBoard(parent, boardName) {
-    let boardHeading = document.createElement('h3')
-    boardHeading.innerText = (boardName === 'playerOneBoard') ? 'Player' : 'Opponent'
-    document.getElementById(parent).appendChild(boardHeading)
+    let boardHeading = document.createElement("h3");
+    boardHeading.innerText =
+      boardName === "playerOneBoard" ? "Player" : "Opponent";
+    document.getElementById(parent).appendChild(boardHeading);
 
-
-    const boardContainer = document.createElement('div')
+    const boardContainer = document.createElement("div");
     // boardContainer.classList.add('container')
-    boardContainer.classList.add('board-container')
-    boardContainer.setAttribute('id', boardName)
-    document.getElementById(parent).appendChild(boardContainer)
-    let coordY = 1
-    let coordX = letters[0]
+    boardContainer.classList.add("board-container");
+    boardContainer.setAttribute("id", boardName);
+    document.getElementById(parent).appendChild(boardContainer);
+    let coordY = 1;
+    let coordX = letters[0];
 
     for (let k = 0; k < 100; k++, coordY++) {
-      const newField = document.createElement('div')
-      newField.classList.add('board-field')
+      const newField = document.createElement("div");
+      newField.classList.add("board-field");
       if (coordY > 10) {
-        coordY = 1
-        coordX = letters[letters.findIndex(e => e === coordX) + 1]
+        coordY = 1;
+        coordX = letters[letters.findIndex((e) => e === coordX) + 1];
       }
-      let playerCoord = (boardName === 'playerOneBoard') ? 'O' : 'T' //O - player One; T - player Two
-      let coordinates = playerCoord + coordX + coordY
-      newField.setAttribute('id', coordinates)
+      let playerCoord = boardName === "playerOneBoard" ? "O" : "T"; //O - player One; T - player Two
+      let coordinates = playerCoord + coordX + coordY;
+      newField.setAttribute("id", coordinates);
 
-
-      boardContainer.appendChild(newField)
+      boardContainer.appendChild(newField);
     }
-
-
-
   }
 
-  function updateBoardDisplay(board) {//board would be O or T and based on that display ships (for now)
-    let playerCoord = (board.player.designation === "O") ? "O" : "T"
-    let boardID = (playerCoord === "O") ? "playerOneBoard" : "playerTwoBoard"
-    let displayedBoard = document.getElementById(boardID)
+  function updateBoardDisplay(board) {
+    //board would be O or T and based on that display ships (for now)
+    let playerCoord = board.player.designation === "O" ? "O" : "T";
+    let boardID = playerCoord === "O" ? "playerOneBoard" : "playerTwoBoard";
+    let displayedBoard = document.getElementById(boardID);
 
-    displayedBoard.classList.add("cought")
+    displayedBoard.classList.add("cought");
 
     board.fields.forEach((f) => {
-      let fieldInDOM = document.getElementById(playerCoord + f.X + f.Y)
+      let fieldInDOM = document.getElementById(playerCoord + f.X + f.Y);
       if (f.ship && board.visible) {
-        fieldInDOM.classList.add("visible-ship")
+        fieldInDOM.classList.add("visible-ship");
       }
       if (f.hit) {
-        fieldInDOM.classList.add("hit-field")
+        fieldInDOM.classList.add("hit-field");
         if (f.ship) {
-          fieldInDOM.classList.add("hit-ship")
+          fieldInDOM.classList.add("hit-ship");
         }
       }
-    })
-
+    });
   }
 
   function handleFieldClick(clickedField, targetedBoard, attacker) {
-    let targetedX = clickedField.id[1]
+    let targetedX = clickedField.id[1];
 
     //if the id has a 4th value, concatenate it to 3rd, otherwise just use 3rd value of id as Y
-    let targetedY = (clickedField.id[3] ? clickedField.id[2].concat(clickedField.id[3]) : clickedField.id[2])
-    attacker.attackBoard(targetedBoard, targetedX, targetedY)
+    let targetedY = clickedField.id[3]
+      ? clickedField.id[2].concat(clickedField.id[3])
+      : clickedField.id[2];
+    attacker.attackBoard(targetedBoard, targetedX, targetedY);
   }
 
-
   return {
-    updateBoardDisplay, handleFieldClick
+    updateBoardDisplay,
+    handleFieldClick,
   };
 })();
 
@@ -422,103 +462,97 @@ const DOMManagement = (() => {
 //wiktory
 
 const game = (() => {
-  let currentPlayer = null
+  let currentPlayer = null;
 
   function startGame() {
-    let playerOne = Player('human', 'O')
-    let playerTwo = Player('computer', 'T')
+    let playerOne = Player("human", "O");
+    let playerTwo = Player("computer", "T");
 
-    let boardPlayerOne = Gameboard(playerOne)
+    let boardPlayerOne = Gameboard(playerOne);
 
-    boardPlayerOne.addShip(['A', 1])
-    boardPlayerOne.placeShipRandomly(6)
-    verifiedBoardState = boardPlayerOne
+    boardPlayerOne.addShip(["A", 1]);
+    boardPlayerOne.placeShipRandomly(6);
+    verifiedBoardState = boardPlayerOne;
 
-    testRandomlyFilledBoard = boardPlayerOne
+    testRandomlyFilledBoard = boardPlayerOne;
     //boardPlayerOne.addShip(['B', 8])
-    let boardPlayerTwo = Gameboard(playerTwo, false)//second argument is visibility
-    boardPlayerTwo.addShip(['J', 10])
+    let boardPlayerTwo = Gameboard(playerTwo, false); //second argument is visibility
+    boardPlayerTwo.addShip(["J", 10]);
 
-
-
-    DOMManagement.updateBoardDisplay(boardPlayerOne)
-    DOMManagement.updateBoardDisplay(boardPlayerTwo)
-
-
+    DOMManagement.updateBoardDisplay(boardPlayerOne);
+    DOMManagement.updateBoardDisplay(boardPlayerTwo);
 
     function makeMove(player) {
       function removeListenersFromBoard(clearedBoard) {
         for (let b = 0; b < clearedBoard.children.length; b++) {
-          clearedBoard.children[b].removeEventListener('click', fieldClickEvent)
+          clearedBoard.children[b].removeEventListener(
+            "click",
+            fieldClickEvent
+          );
         }
       }
       function handleGameOver() {
-        removeListenersFromBoard(document.getElementById('playerTwoBoard'))
-        removeListenersFromBoard(document.getElementById('playerOneBoard'))
-        console.log(`game over, player ${currentPlayer.designation} won`)
+        removeListenersFromBoard(document.getElementById("playerTwoBoard"));
+        removeListenersFromBoard(document.getElementById("playerOneBoard"));
+        console.log(`game over, player ${currentPlayer.designation} won`);
       }
 
-      if (player.type === 'human') {
-        let targetedBoardDOM = document.getElementById("playerTwoBoard")//fix in case of two humans
-        let targetedBoard = boardPlayerTwo
+      if (player.type === "human") {
+        let targetedBoardDOM = document.getElementById("playerTwoBoard"); //fix in case of two humans
+        let targetedBoard = boardPlayerTwo;
 
         function fieldClickEvent(event) {
-          if (!event.target.classList.contains('hit-field')) {
-            DOMManagement.handleFieldClick(event.target, targetedBoard, player)
-            DOMManagement.updateBoardDisplay(boardPlayerOne)
-            DOMManagement.updateBoardDisplay(boardPlayerTwo)
-            removeListenersFromBoard(document.getElementById('playerTwoBoard'))
-            removeListenersFromBoard(document.getElementById('playerOneBoard'))
+          if (!event.target.classList.contains("hit-field")) {
+            DOMManagement.handleFieldClick(event.target, targetedBoard, player);
+            DOMManagement.updateBoardDisplay(boardPlayerOne);
+            DOMManagement.updateBoardDisplay(boardPlayerTwo);
+            removeListenersFromBoard(document.getElementById("playerTwoBoard"));
+            removeListenersFromBoard(document.getElementById("playerOneBoard"));
 
             if (targetedBoard.gameOver) {
-              handleGameOver(targetedBoardDOM)
+              handleGameOver(targetedBoardDOM);
             } else {
-              currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
+              currentPlayer =
+                currentPlayer === playerOne ? playerTwo : playerOne;
               setTimeout(makeMove, 500, currentPlayer);
             }
           }
         }
 
         for (let a = 0; a < targetedBoardDOM.children.length; a++) {
-          targetedBoardDOM.children[a].addEventListener('click', fieldClickEvent)
+          targetedBoardDOM.children[a].addEventListener(
+            "click",
+            fieldClickEvent
+          );
         }
-
-
-      } else if (player.type === 'computer') {
-
+      } else if (player.type === "computer") {
         //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
-        let targetedBoard = boardPlayerOne
+        let targetedBoard = boardPlayerOne;
 
-
-        player.randomAttack(targetedBoard)
-
+        player.randomAttack(targetedBoard);
 
         //extract the below into a function
-        DOMManagement.updateBoardDisplay(boardPlayerOne)
-        DOMManagement.updateBoardDisplay(boardPlayerTwo)
+        DOMManagement.updateBoardDisplay(boardPlayerOne);
+        DOMManagement.updateBoardDisplay(boardPlayerTwo);
         //console.log(targetedBoard)
         if (targetedBoard.gameOver) {
-          handleGameOver()
+          handleGameOver();
         } else {
           //console.log('not game over choice')
-          currentPlayer = (currentPlayer === playerOne) ? playerTwo : playerOne
-          makeMove(currentPlayer)
+          currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+          makeMove(currentPlayer);
         }
       }
       //stop making moves if game has ended
     }
 
-    currentPlayer = playerOne
-    makeMove(currentPlayer)
+    currentPlayer = playerOne;
+    makeMove(currentPlayer);
   }
 
-
-
-
   return {
-    startGame
+    startGame,
   };
 })();
-
 
 module.exports = { Ship, Gameboard, findField, Player, game };
