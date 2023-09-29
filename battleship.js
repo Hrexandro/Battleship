@@ -19,6 +19,8 @@
 
 //PROCEED WITH DIRECTIONAL PLACEMENT
 
+//BUG: places 1 ship on J10 at the end for no reason?
+
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
 function Ship(length = 1) {
@@ -64,6 +66,8 @@ function Gameboard(player = null, visible = true) {
       //ex. (["A", 1], ["B", 1])
       let newShip = Ship(args.length);
       let fieldsToFill = args;
+      console.log("placing ship on fields")
+      console.log(fieldsToFill)
       //check if fields are blocked
       for (let i = 0; i < fieldsToFill.length; i++) {
         if (
@@ -194,9 +198,11 @@ function Gameboard(player = null, visible = true) {
         }
         if (direction === "up") {
           console.log("direction is up")
+          console.log([Xdown, currentField.Y, "up"])
+          console.log(checkFieldAdditionSuitability([Xdown, currentField.Y, "up"]))
           if (checkFieldAdditionSuitability([Xdown, currentField.Y, "up"])){
             console.log("moving up from" + JSON.stringify(currentField))
-            nextField = findField(currentField.X, curr, board)
+            nextField = findField(Xdown, currentField.Y, board)
           } else {
             nextField = null
           }
@@ -245,6 +251,8 @@ function Gameboard(player = null, visible = true) {
             attemptedStarterFields.push(currentField.X.concat(currentField.Y));
           }
 
+          console.log("first, randomly picked field is")
+          console.log(currentField)
           coordsToFill.push([currentField.X, currentField.Y]);
 
           let nearbyFields = [];
@@ -258,9 +266,9 @@ function Gameboard(player = null, visible = true) {
           }
 
           //console.log([Xup, currentField.Y, "down"])
-          addToNearbyFieldsIfSuitable([Xup, currentField.Y, "up"]);
+          addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "up"]);
           // console.log([Xdown, currentField.Y, "up"])
-          addToNearbyFieldsIfSuitable([Xdown, currentField.Y, "down"]);
+          addToNearbyFieldsIfSuitable([Xup, currentField.Y, "down"]);
           //console.log([Xdown, currentField.Y, "up"])
           addToNearbyFieldsIfSuitable([currentField.X, Yup, "right"]);
           //console.log([currentField.X, Ydown, "left"])
@@ -268,6 +276,7 @@ function Gameboard(player = null, visible = true) {
 
           //!!!TEMPORARY, change to directional later
           nextField = nearbyFields[Math.floor(Math.random() * nearbyFields.length)];
+
           // console.log("next field, then nearbyFields logged below")
           // console.log(nextField)
           // console.log(nearbyFields)
@@ -278,14 +287,17 @@ function Gameboard(player = null, visible = true) {
         if (!nextField) {
           console.log("restarting due to something going horribly wrong");
           coordsToFill = [];
+          direction = null;
           nearbyFields = [];
           nextField = null;
           attemptPlacing();
         } else {
-          console.log("defining direction: nextField, direction")
-          console.log(nextField)
-          direction = nextField[2];
-          console.log(direction)
+          if (!direction){
+            console.log("defining direction: nextField, direction")
+            console.log(nextField)
+            direction = nextField[2];
+            console.log(direction)
+          }
           attemptPlacing(findField(nextField[0], nextField[1], board));
 
           //console.log(direction)
@@ -304,6 +316,8 @@ function Gameboard(player = null, visible = true) {
       }
       attemptPlacing();
       //take the coords from coordstofill
+      console.log("final coordsToFill are")
+      console.log(coordsToFill)
       board.addShip(...coordsToFill); //make correct coordinates
     },
     receiveAttack(targetX, targetY) {
