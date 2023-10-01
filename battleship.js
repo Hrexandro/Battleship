@@ -207,7 +207,36 @@ function Gameboard(player = null, visible = true) {
             nextField = null
           }
           
-        } else {
+        } else if (direction === "down"){
+          console.log("direction is down")
+          console.log([Xup, currentField.Y])
+          console.log(checkFieldAdditionSuitability([Xup, currentField.Y, "down"]))
+          if (checkFieldAdditionSuitability([Xup, currentField.Y, "down"])){
+            console.log("moving down from" + JSON.stringify(currentField))
+            nextField = findField(Xup, currentField.Y, board)
+          } else {
+            nextField = null
+          }
+        } else if (direction === "right"){
+          console.log("direction is right")
+          console.log([currentField.X, Yup, "right"])
+          if (checkFieldAdditionSuitability([currentField.X, Yup, "right"])){
+            console.log("moving right from" + JSON.stringify(currentField))
+            nextField = findField(currentField.X, Yup, board)
+          } else {
+            nextField = null
+          }
+          // addToNearbyFieldsIfSuitable([currentField.X, Ydown, "left"]);
+        } else if (direction === "left"){
+          console.log("direction is left")
+          console.log([currentField.X, Ydown, "left"])
+          if (checkFieldAdditionSuitability([currentField.X, Ydown, "left"])){
+            console.log("moving left from" + JSON.stringify(currentField))
+            nextField = findField(currentField.X, Ydown, board)
+          } else {
+            nextField = null
+          }
+        }else {
 
           function findNewRandomField() {
             //to roll recursively, in case the field was already tried
