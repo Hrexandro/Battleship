@@ -154,7 +154,7 @@ function Gameboard(player = null, visible = true) {
         let Yup = null
         let Ydown = null
 
-        function defineDirectionalVariables(){
+        function defineDirectionalVariables() {
           Xup = letters[letters.findIndex((e) => e === currentField.X) + 1];
           Xdown =
             letters[letters.findIndex((e) => e === currentField.X) - 1];
@@ -162,10 +162,10 @@ function Gameboard(player = null, visible = true) {
           Ydown = currentField.Y - 1;
         }
 
-        if (currentField){
+        if (currentField) {
           defineDirectionalVariables()
         }
-        
+
         function checkFieldAdditionSuitability(checkedField) {
           //checkedField should be array of [X, Y]
           if (letters.includes(checkedField[0])) {
@@ -198,50 +198,61 @@ function Gameboard(player = null, visible = true) {
         }
         if (direction === "up") {
           console.log("direction is up")
-          console.log([Xdown, currentField.Y, "up"])
-          console.log(checkFieldAdditionSuitability([Xdown, currentField.Y, "up"]))
-          if (checkFieldAdditionSuitability([Xdown, currentField.Y, "up"])){
+          if (checkFieldAdditionSuitability([Xdown, currentField.Y, "up"])) {
+            console.log([Xdown, currentField.Y, "up"])
+            console.log(checkFieldAdditionSuitability([Xdown, currentField.Y, "up"]))
             console.log("moving up from" + JSON.stringify(currentField))
-            nextField = findField(Xdown, currentField.Y, board)
+            console.log(findField(Xdown, currentField.Y, board))
+            nextField = [Xdown, currentField.Y, board]
           } else {
             nextField = null
           }
-          
-        } else if (direction === "down"){
+
+        } else if (direction === "down") {
           console.log("direction is down")
-          console.log([Xup, currentField.Y])
-          console.log(checkFieldAdditionSuitability([Xup, currentField.Y, "down"]))
-          if (checkFieldAdditionSuitability([Xup, currentField.Y, "down"])){
+          if (checkFieldAdditionSuitability([Xup, currentField.Y, "down"])) {
+            console.log([Xup, currentField.Y])
+            console.log(checkFieldAdditionSuitability([Xup, currentField.Y, "down"]))
             console.log("moving down from" + JSON.stringify(currentField))
-            nextField = findField(Xup, currentField.Y, board)
+            console.log(findField(Xup, currentField.Y, board))
+            nextField = [Xup, currentField.Y, board]
           } else {
             nextField = null
           }
-        } else if (direction === "right"){
-          console.log("direction is right")
-          console.log([currentField.X, Yup, "right"])
-          if (checkFieldAdditionSuitability([currentField.X, Yup, "right"])){
+        } else if (direction === "right") {
+          if (checkFieldAdditionSuitability([currentField.X, Yup, "right"])) {
             console.log("moving right from" + JSON.stringify(currentField))
-            nextField = findField(currentField.X, Yup, board)
+            console.log("direction is right")
+            console.log([currentField.X, Yup, "right"])
+            nextField = [currentField.X, Yup, board]
+            console.log(findField(currentField.X, Yup, board))
           } else {
             nextField = null
           }
           // addToNearbyFieldsIfSuitable([currentField.X, Ydown, "left"]);
-        } else if (direction === "left"){
-          console.log("direction is left")
-          console.log([currentField.X, Ydown, "left"])
-          if (checkFieldAdditionSuitability([currentField.X, Ydown, "left"])){
+        } else if (direction === "left") {
+          if (checkFieldAdditionSuitability([currentField.X, Ydown, "left"])) {
             console.log("moving left from" + JSON.stringify(currentField))
-            nextField = findField(currentField.X, Ydown, board)
+            console.log("direction is left")
+            console.log([currentField.X, Ydown, "left"])
+            console.log(findField(currentField.X, Ydown, board))
+            nextField = [currentField.X, Ydown, board]
           } else {
             nextField = null
           }
-        }else {
+        } else {
 
           function findNewRandomField() {
             //to roll recursively, in case the field was already tried
-            let returnedField =
-              board.fields[Math.floor(Math.random() * board.fields.length)];
+            let listOfUnblockedFields = []
+
+            for (let c = 0; c < board.fields.length; c++) {
+              if (board.verifyIfFieldIsNotBlocked(board.fields[c].X, board.fields[c].Y)) {
+                listOfUnblockedFields.push(board.fields[c])
+              }
+            }
+
+            let returnedField = listOfUnblockedFields[Math.floor(Math.random() * listOfUnblockedFields.length)];
             if (
               !attemptedStarterFields.find(
                 (e) => e[0] == returnedField.X && e[1] == returnedField.Y
@@ -253,25 +264,25 @@ function Gameboard(player = null, visible = true) {
             }
           }
 
-          function recursivelyRandomlyFindSuitableField() {
-            let currentlyChecked = findNewRandomField();
-            if (
-              checkFieldAdditionSuitability([
-                currentlyChecked.X,
-                currentlyChecked.Y,
-              ])
-            ) {
-              return currentlyChecked;
-            } else {
-              return recursivelyRandomlyFindSuitableField();
-            }
-          }
+          // function recursivelyRandomlyFindSuitableField() {
+          //   let currentlyChecked = findNewRandomField();
+          //   if (
+          //     checkFieldAdditionSuitability([
+          //       currentlyChecked.X,
+          //       currentlyChecked.Y,
+          //     ])
+          //   ) {
+          //     return currentlyChecked;
+          //   } else {
+          //     return recursivelyRandomlyFindSuitableField();
+          //   }
+          // }
 
           if (coordsToFill.length >= size) {
             return;
           }
           if (!currentField) {
-            currentField = recursivelyRandomlyFindSuitableField();
+            currentField = findNewRandomField();
             defineDirectionalVariables()
           }
 
@@ -321,12 +332,15 @@ function Gameboard(player = null, visible = true) {
           nextField = null;
           attemptPlacing();
         } else {
-          if (!direction){
+          if (!direction) {
             console.log("defining direction: nextField, direction")
             console.log(nextField)
             direction = nextField[2];
             console.log(direction)
+          } else if (coordsToFill.length >= size) {
+            return
           }
+          coordsToFill.push([nextField[0], nextField[1]])
           attemptPlacing(findField(nextField[0], nextField[1], board));
 
           //console.log(direction)
@@ -407,7 +421,7 @@ function Player(type = "human", designation = null) {
       if (fieldsNotAttackedYet.length !== 0) {
         let target =
           fieldsNotAttackedYet[
-            Math.floor(Math.random() * fieldsNotAttackedYet.length)
+          Math.floor(Math.random() * fieldsNotAttackedYet.length)
           ];
         this.attackBoard(board, target.X, target.Y);
       } else {
@@ -513,14 +527,37 @@ const game = (() => {
 
     let boardPlayerOne = Gameboard(playerOne);
 
-    boardPlayerOne.addShip(["A", 1]);
-    boardPlayerOne.placeShipRandomly(6);
+
+
+    boardPlayerOne.placeShipRandomly(4);
+    
+    boardPlayerOne.placeShipRandomly(3);
+    boardPlayerOne.placeShipRandomly(3);
+    boardPlayerOne.placeShipRandomly(2);
+    boardPlayerOne.placeShipRandomly(2);
+    boardPlayerOne.placeShipRandomly(2);
+
+    boardPlayerOne.placeShipRandomly(1);
+    boardPlayerOne.placeShipRandomly(1);
+    boardPlayerOne.placeShipRandomly(1);
+    boardPlayerOne.placeShipRandomly(1);
     verifiedBoardState = boardPlayerOne;
 
     testRandomlyFilledBoard = boardPlayerOne;
     //boardPlayerOne.addShip(['B', 8])
     let boardPlayerTwo = Gameboard(playerTwo, false); //second argument is visibility
-    boardPlayerTwo.addShip(["J", 10]);
+    boardPlayerTwo.placeShipRandomly(4);
+
+    boardPlayerTwo.placeShipRandomly(3);
+    boardPlayerTwo.placeShipRandomly(3);
+    boardPlayerTwo.placeShipRandomly(2);
+    boardPlayerTwo.placeShipRandomly(2);
+    boardPlayerTwo.placeShipRandomly(2);
+
+    boardPlayerTwo.placeShipRandomly(1);
+    boardPlayerTwo.placeShipRandomly(1);
+    boardPlayerTwo.placeShipRandomly(1);
+    boardPlayerTwo.placeShipRandomly(1);
 
     DOMManagement.updateBoardDisplay(boardPlayerOne);
     DOMManagement.updateBoardDisplay(boardPlayerTwo);
