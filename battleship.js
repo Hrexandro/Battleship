@@ -19,7 +19,8 @@
 
 //PROCEED WITH DIRECTIONAL PLACEMENT
 
-//BUG: places 1 ship on J10 at the end for no reason?
+//BUG: 
+//"restarting due to placement error" until call stack exceeded - do something to avoid that
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
@@ -108,29 +109,16 @@ function Gameboard(player = null, visible = true) {
               }
             }
 
-            // blockSurroundingFields([currentX, currentY], -1, -1);
-            // blockSurroundingFields([currentX, currentY], -1, 0);
-            // blockSurroundingFields([currentX, currentY], -1, 1);
-
-            // blockSurroundingFields([currentX, currentY], 0, -1);
-            // blockSurroundingFields([currentX, currentY], 0, 1);
-
-            // blockSurroundingFields([currentX, currentY], 1, -1);
-            // blockSurroundingFields([currentX, currentY], 1, 0);
-            // blockSurroundingFields([currentX, currentY], 1, 1);
 
             function applyFunctionToSurroundingFields(appliedFunction, targetedFieldCoords /* [X, Y]*/ ) {//use this to mark surrounding fields as hit after sinking a ship
               appliedFunction(targetedFieldCoords, -1, -1);
               appliedFunction(targetedFieldCoords, -1, 0);
               appliedFunction(targetedFieldCoords, -1, 1);
-//eeeeh targeted fiel????
               appliedFunction(targetedFieldCoords, 0, -1);
               appliedFunction(targetedFieldCoords, 0, 1);
-
               appliedFunction(targetedFieldCoords, 1, -1);
               appliedFunction(targetedFieldCoords, 1, 0);
               appliedFunction(targetedFieldCoords, 1, 1);
-              //finish this!!!!!
             }
 
             applyFunctionToSurroundingFields(blockSurroundingFields, [currentX, currentY])
@@ -282,8 +270,11 @@ function Gameboard(player = null, visible = true) {
           } else if (coordsToFill.length >= size) {
             return
           }
-          coordsToFill.push([nextField[0], nextField[1]])
-          attemptPlacing(findField(nextField[0], nextField[1], board));
+          
+          if (size > 1){
+            coordsToFill.push([nextField[0], nextField[1]])
+            attemptPlacing(findField(nextField[0], nextField[1], board));
+          }
         }
 
       }
