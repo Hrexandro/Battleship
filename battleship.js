@@ -19,7 +19,7 @@
 
 //PROCEED WITH DIRECTIONAL PLACEMENT
 
-//BUG: 
+//BUG:
 //"restarting due to placement error" until call stack exceeded - do something to avoid that
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
@@ -63,6 +63,21 @@ function Gameboard(player = null, visible = true) {
     visible,
     fields: createEmptyBoard(),
     gameOver: false,
+    applyFunctionToSurroundingFields(
+      appliedFunction,
+      targetedFieldCoords /* [X, Y]*/
+    ) {
+      //use this to mark surrounding fields as hit after sinking a ship
+
+      appliedFunction(targetedFieldCoords, -1, -1);
+      appliedFunction(targetedFieldCoords, -1, 0);
+      appliedFunction(targetedFieldCoords, -1, 1);
+      appliedFunction(targetedFieldCoords, 0, -1);
+      appliedFunction(targetedFieldCoords, 0, 1);
+      appliedFunction(targetedFieldCoords, 1, -1);
+      appliedFunction(targetedFieldCoords, 1, 0);
+      appliedFunction(targetedFieldCoords, 1, 1);
+    },
     addShip(...args) {
       //ex. (["A", 1], ["B", 1])
       let newShip = Ship(args.length);
@@ -109,19 +124,10 @@ function Gameboard(player = null, visible = true) {
               }
             }
 
-
-            function applyFunctionToSurroundingFields(appliedFunction, targetedFieldCoords /* [X, Y]*/ ) {//use this to mark surrounding fields as hit after sinking a ship
-              appliedFunction(targetedFieldCoords, -1, -1);
-              appliedFunction(targetedFieldCoords, -1, 0);
-              appliedFunction(targetedFieldCoords, -1, 1);
-              appliedFunction(targetedFieldCoords, 0, -1);
-              appliedFunction(targetedFieldCoords, 0, 1);
-              appliedFunction(targetedFieldCoords, 1, -1);
-              appliedFunction(targetedFieldCoords, 1, 0);
-              appliedFunction(targetedFieldCoords, 1, 1);
-            }
-
-            applyFunctionToSurroundingFields(blockSurroundingFields, [currentX, currentY])
+            this.applyFunctionToSurroundingFields(blockSurroundingFields, [
+              currentX,
+              currentY,
+            ]);
 
             break;
           }
@@ -137,24 +143,23 @@ function Gameboard(player = null, visible = true) {
 
       let coordsToFill = []; //starting point of the ship we are about to place
       let direction = null;
-      let nextField = null
+      let nextField = null;
 
       function attemptPlacing(currentField) {
-        let Xup = null
-        let Xdown = null
-        let Yup = null
-        let Ydown = null
+        let Xup = null;
+        let Xdown = null;
+        let Yup = null;
+        let Ydown = null;
 
         function defineDirectionalVariables() {
           Xup = letters[letters.findIndex((e) => e === currentField.X) + 1];
-          Xdown =
-            letters[letters.findIndex((e) => e === currentField.X) - 1];
+          Xdown = letters[letters.findIndex((e) => e === currentField.X) - 1];
           Yup = currentField.Y + 1;
           Ydown = currentField.Y - 1;
         }
 
         if (currentField) {
-          defineDirectionalVariables()
+          defineDirectionalVariables();
         }
 
         function checkFieldAdditionSuitability(checkedField) {
@@ -168,8 +173,7 @@ function Gameboard(player = null, visible = true) {
               ) {
                 if (
                   !coordsToFill.find(
-                    (e) =>
-                      e[0] === checkedField[0] && e[1] === checkedField[1]
+                    (e) => e[0] === checkedField[0] && e[1] === checkedField[1]
                   )
                 ) {
                   return checkedField;
@@ -182,42 +186,48 @@ function Gameboard(player = null, visible = true) {
         }
         if (direction === "up") {
           if (checkFieldAdditionSuitability([Xdown, currentField.Y, "up"])) {
-            nextField = [Xdown, currentField.Y, board]
+            nextField = [Xdown, currentField.Y, board];
           } else {
-            nextField = null
+            nextField = null;
           }
-
         } else if (direction === "down") {
           if (checkFieldAdditionSuitability([Xup, currentField.Y, "down"])) {
-            nextField = [Xup, currentField.Y, board]
+            nextField = [Xup, currentField.Y, board];
           } else {
-            nextField = null
+            nextField = null;
           }
         } else if (direction === "right") {
           if (checkFieldAdditionSuitability([currentField.X, Yup, "right"])) {
-            nextField = [currentField.X, Yup, board]
+            nextField = [currentField.X, Yup, board];
           } else {
-            nextField = null
+            nextField = null;
           }
         } else if (direction === "left") {
           if (checkFieldAdditionSuitability([currentField.X, Ydown, "left"])) {
-            nextField = [currentField.X, Ydown, board]
+            nextField = [currentField.X, Ydown, board];
           } else {
-            nextField = null
+            nextField = null;
           }
         } else {
-
           function findNewRandomField() {
             //to roll recursively, in case the field was already tried
-            let listOfUnblockedFields = []
+            let listOfUnblockedFields = [];
 
             for (let c = 0; c < board.fields.length; c++) {
-              if (board.verifyIfFieldIsNotBlocked(board.fields[c].X, board.fields[c].Y)) {
-                listOfUnblockedFields.push(board.fields[c])
+              if (
+                board.verifyIfFieldIsNotBlocked(
+                  board.fields[c].X,
+                  board.fields[c].Y
+                )
+              ) {
+                listOfUnblockedFields.push(board.fields[c]);
               }
             }
 
-            let returnedField = listOfUnblockedFields[Math.floor(Math.random() * listOfUnblockedFields.length)];
+            let returnedField =
+              listOfUnblockedFields[
+                Math.floor(Math.random() * listOfUnblockedFields.length)
+              ];
             if (
               !attemptedStarterFields.find(
                 (e) => e[0] == returnedField.X && e[1] == returnedField.Y
@@ -234,7 +244,7 @@ function Gameboard(player = null, visible = true) {
           }
           if (!currentField) {
             currentField = findNewRandomField();
-            defineDirectionalVariables()
+            defineDirectionalVariables();
           }
 
           if (coordsToFill.length < 1) {
@@ -255,7 +265,8 @@ function Gameboard(player = null, visible = true) {
           addToNearbyFieldsIfSuitable([currentField.X, Yup, "right"]);
           addToNearbyFieldsIfSuitable([currentField.X, Ydown, "left"]);
 
-          nextField = nearbyFields[Math.floor(Math.random() * nearbyFields.length)];
+          nextField =
+            nearbyFields[Math.floor(Math.random() * nearbyFields.length)];
         }
         if (!nextField) {
           console.log("restarting due to placement error");
@@ -268,28 +279,44 @@ function Gameboard(player = null, visible = true) {
           if (!direction) {
             direction = nextField[2];
           } else if (coordsToFill.length >= size) {
-            return
+            return;
           }
-          
-          if (size > 1){
-            coordsToFill.push([nextField[0], nextField[1]])
+
+          if (size > 1) {
+            coordsToFill.push([nextField[0], nextField[1]]);
             attemptPlacing(findField(nextField[0], nextField[1], board));
           }
         }
-
       }
       attemptPlacing();
       board.addShip(...coordsToFill);
     },
     receiveAttack(targetX, targetY) {
-      let attackedField = findField(targetX, targetY, this);
+      let board = this;
+
+      let attackedField = findField(targetX, targetY, board);
       if (attackedField.ship) {
         attackedField.ship.hit();
-        ///////////////////////////////////////////////////..................
-        if (attackedField.ship.sunk) {//for testing purposes, delete later
-          console.log("zatopiony!")
+        if (attackedField.ship.sunk) {
+          function hitSurroundingFields(current, Xmodifier, Ymodifier) {
+            let XtoBeHit =
+              letters[letters.findIndex((e) => e === current[0]) + Xmodifier];
+            if (XtoBeHit) {
+              let YtoBeHit = current[1] + Ymodifier;
+              if (YtoBeHit < 11 && YtoBeHit > 0) {
+                findField(XtoBeHit, YtoBeHit, board).hit = true;
+              }
+            }
+          }
+
+          let fieldsContainingSunkShip = board.fields.filter((e) => e.ship === attackedField.ship)
+
+          console.log(fieldsContainingSunkShip);
+
+          for (let a = 0; a < fieldsContainingSunkShip.length; a++){
+            this.applyFunctionToSurroundingFields(hitSurroundingFields, [fieldsContainingSunkShip[a].X, fieldsContainingSunkShip[a].Y])
+          }
         }
-        //////////////////////////////////////////////////////////////////
       }
       attackedField.hit = true;
       if (this.gameOverCheck()) {
@@ -344,7 +371,7 @@ function Player(type = "human", designation = null) {
       if (fieldsNotAttackedYet.length !== 0) {
         let target =
           fieldsNotAttackedYet[
-          Math.floor(Math.random() * fieldsNotAttackedYet.length)
+            Math.floor(Math.random() * fieldsNotAttackedYet.length)
           ];
         this.attackBoard(board, target.X, target.Y);
       } else {
