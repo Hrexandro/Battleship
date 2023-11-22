@@ -477,36 +477,19 @@ const game = (() => {
 
     let boardPlayerOne = Gameboard(playerOne);
 
-    boardPlayerOne.placeShipRandomly(4);
+    function placeShipsOnBoard(targetedBoard, largest){
+      for (let size = largest, numberOfShips = 1; size > 0; size--, numberOfShips++){
+        for (let iterationes = numberOfShips; iterationes > 0; iterationes--){
+          targetedBoard.placeShipRandomly(size)
+        }
+      }
 
-    boardPlayerOne.placeShipRandomly(3);
-    boardPlayerOne.placeShipRandomly(3);
-
-    boardPlayerOne.placeShipRandomly(2);
-    boardPlayerOne.placeShipRandomly(2);
-    boardPlayerOne.placeShipRandomly(2);
-
-    boardPlayerOne.placeShipRandomly(1);
-    boardPlayerOne.placeShipRandomly(1);
-    boardPlayerOne.placeShipRandomly(1);
-    boardPlayerOne.placeShipRandomly(1);
+    }
+    placeShipsOnBoard(boardPlayerOne, 4)
     verifiedBoardState = boardPlayerOne;
 
     let boardPlayerTwo = Gameboard(playerTwo, false); //second argument is visibility
-
-    boardPlayerTwo.placeShipRandomly(4);
-
-    boardPlayerTwo.placeShipRandomly(3);
-    boardPlayerTwo.placeShipRandomly(3);
-
-    boardPlayerTwo.placeShipRandomly(2);
-    boardPlayerTwo.placeShipRandomly(2);
-    boardPlayerTwo.placeShipRandomly(2);
-
-    boardPlayerTwo.placeShipRandomly(1);
-    boardPlayerTwo.placeShipRandomly(1);
-    boardPlayerTwo.placeShipRandomly(1);
-    boardPlayerTwo.placeShipRandomly(1);
+    placeShipsOnBoard(boardPlayerTwo, 4)
 
     DOMManagement.updateBoardDisplay(boardPlayerOne);
     DOMManagement.updateBoardDisplay(boardPlayerTwo);
