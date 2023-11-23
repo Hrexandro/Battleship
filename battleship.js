@@ -393,21 +393,14 @@ const game = (() => {
     console.log(`game over, player ${currentPlayer.designation} won`);
   }
 
-  function removeListenersFromBoard(clearedBoard) {
-    for (let b = 0; b < clearedBoard.children.length; b++) {
-      clearedBoard.children[b].removeEventListener(
-        "click",
-        fieldClickEvent
-        );
-      }
-    }
+
     function startGame() {
       console.log("game starting")
       let playerOne = Player("human", "O");
       let playerTwo = Player("computer", "T");
       
       let boardPlayerOne = Gameboard(playerOne);
-      
+      console.log(boardPlayerOne)
 
       function placeShipsOnBoard(targetedBoard, largest){
       for (let size = largest, numberOfShips = 1; size > 0; size--, numberOfShips++){
@@ -417,11 +410,11 @@ const game = (() => {
       }
 
     }
-    placeShipsOnBoard(boardPlayerOne, 1)
+    placeShipsOnBoard(boardPlayerOne, 4)
     verifiedBoardState = boardPlayerOne;
 
     let boardPlayerTwo = Gameboard(playerTwo, false); //second argument is visibility
-    placeShipsOnBoard(boardPlayerTwo, 1)
+    placeShipsOnBoard(boardPlayerTwo, 4)
 
     DOMManagement.updateBoardDisplay(boardPlayerOne);
     DOMManagement.updateBoardDisplay(boardPlayerTwo);
@@ -431,6 +424,14 @@ const game = (() => {
       if (player.type === "human") {
         let targetedBoardDOM = document.getElementById("playerTwoBoard"); //fix in case of two humans
         let targetedBoard = boardPlayerTwo;
+          function removeListenersFromBoard(clearedBoard) {
+    for (let b = 0; b < clearedBoard.children.length; b++) {
+      clearedBoard.children[b].removeEventListener(
+        "click",
+        fieldClickEvent
+        );
+      }
+    }
 
         function fieldClickEvent(event) {
           if (!event.target.classList.contains("hit-field")) {
@@ -449,6 +450,15 @@ const game = (() => {
             }
           }
         }
+
+        function removeListenersFromBoard(clearedBoard) {
+          for (let b = 0; b < clearedBoard.children.length; b++) {
+            clearedBoard.children[b].removeEventListener(
+              "click",
+              fieldClickEvent
+              );
+            }
+          }
         for (let a = 0; a < targetedBoardDOM.children.length; a++) {
           targetedBoardDOM.children[a].addEventListener(
             "click",
@@ -466,8 +476,8 @@ const game = (() => {
         DOMManagement.updateBoardDisplay(boardPlayerTwo);
         //console.log(targetedBoard)
         if (targetedBoard.gameOver) {
-          removeListenersFromBoard(document.getElementById("playerTwoBoard"));
-          removeListenersFromBoard(document.getElementById("playerOneBoard"));
+          // removeListenersFromBoard(document.getElementById("playerTwoBoard"));
+          // removeListenersFromBoard(document.getElementById("playerOneBoard"));
           handleGameOver();
         } else {
           //console.log('not game over choice')
@@ -508,7 +518,6 @@ const DOMManagement = (() => {
   });
 
   function setUpBoardsAndStartGame(){
-    console.log("runs event")
     displayBoard("player-one-area", "playerOneBoard");
     displayBoard("player-two-area", "playerTwoBoard");
     //document.getElementById("centered-button-container").remove();
@@ -577,7 +586,6 @@ const DOMManagement = (() => {
   }
 
   function displayGameOverContent(winner){
-    console.log("displaying")
     let message = document.createElement('h3')
     message.innerText = `${winner} is the winner!`//what about a tie?
     document.getElementById("game-area-container").appendChild(message)
