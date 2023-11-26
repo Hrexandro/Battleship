@@ -229,7 +229,7 @@ function Gameboard(player = null, visible = true) {
 
             let returnedField =
               listOfUnblockedFields[
-                Math.floor(Math.random() * listOfUnblockedFields.length)
+              Math.floor(Math.random() * listOfUnblockedFields.length)
               ];
             if (
               !attemptedStarterFields.find(
@@ -316,7 +316,7 @@ function Gameboard(player = null, visible = true) {
 
           console.log(fieldsContainingSunkShip);
 
-          for (let a = 0; a < fieldsContainingSunkShip.length; a++){
+          for (let a = 0; a < fieldsContainingSunkShip.length; a++) {
             this.applyFunctionToSurroundingFields(hitSurroundingFields, [fieldsContainingSunkShip[a].X, fieldsContainingSunkShip[a].Y])
           }
         }
@@ -374,13 +374,29 @@ function Player(type = "human", designation = null) {
       if (fieldsNotAttackedYet.length !== 0) {
         let target =
           fieldsNotAttackedYet[
-            Math.floor(Math.random() * fieldsNotAttackedYet.length)
+          Math.floor(Math.random() * fieldsNotAttackedYet.length)
           ];
         this.attackBoard(board, target.X, target.Y);
       } else {
         return;
       }
     },
+    guidedAttack(board) {
+      let fieldsNotAttackedYet = board.fields.filter((f) => f.hit === false);
+
+      let fieldsaAdjacentToHitFields = board.fields.forEach((f) => {
+        console.log(f)
+      })
+
+      //Gameboard.applyFunctionToSurroundingFields()
+
+      //extract all fields surrounding hit fields that are not hit themselves
+      //if any of those is in a straight line, add them to list of targets
+      //make sure any near fields not in a straight line are not in the list of targets//add to FORBIDDEN LIST
+      //if no other field is available, shoot a random field that is not on the FORBIDDEN LIST
+
+
+    }
   };
 }
 
@@ -394,17 +410,17 @@ const game = (() => {
   }
 
 
-    function startGame() {
-      console.log("game starting")
-      let playerOne = Player("human", "O");
-      let playerTwo = Player("computer", "T");
-      
-      let boardPlayerOne = Gameboard(playerOne);
-      console.log(boardPlayerOne)
+  function startGame() {
+    console.log("game starting")
+    let playerOne = Player("human", "O");
+    let playerTwo = Player("computer", "T");
 
-      function placeShipsOnBoard(targetedBoard, largest){
-      for (let size = largest, numberOfShips = 1; size > 0; size--, numberOfShips++){
-        for (let iterationes = numberOfShips; iterationes > 0; iterationes--){
+    let boardPlayerOne = Gameboard(playerOne);
+    console.log(boardPlayerOne)
+
+    function placeShipsOnBoard(targetedBoard, largest) {
+      for (let size = largest, numberOfShips = 1; size > 0; size--, numberOfShips++) {
+        for (let iterationes = numberOfShips; iterationes > 0; iterationes--) {
           targetedBoard.placeShipRandomly(size)
         }
       }
@@ -418,20 +434,20 @@ const game = (() => {
 
     DOMManagement.updateBoardDisplay(boardPlayerOne);
     DOMManagement.updateBoardDisplay(boardPlayerTwo);
-    
+
     function makeMove(player) {
 
       if (player.type === "human") {
         let targetedBoardDOM = document.getElementById("playerTwoBoard"); //fix in case of two humans
         let targetedBoard = boardPlayerTwo;
-          function removeListenersFromBoard(clearedBoard) {
-    for (let b = 0; b < clearedBoard.children.length; b++) {
-      clearedBoard.children[b].removeEventListener(
-        "click",
-        fieldClickEvent
-        );
-      }
-    }
+        function removeListenersFromBoard(clearedBoard) {
+          for (let b = 0; b < clearedBoard.children.length; b++) {
+            clearedBoard.children[b].removeEventListener(
+              "click",
+              fieldClickEvent
+            );
+          }
+        }
 
         function fieldClickEvent(event) {
           if (!event.target.classList.contains("hit-field")) {
@@ -440,7 +456,7 @@ const game = (() => {
             DOMManagement.updateBoardDisplay(boardPlayerTwo);
             removeListenersFromBoard(document.getElementById("playerTwoBoard"));
             removeListenersFromBoard(document.getElementById("playerOneBoard"));
-      
+
             if (targetedBoard.gameOver) {
               handleGameOver(targetedBoardDOM);
             } else {
@@ -456,9 +472,9 @@ const game = (() => {
             clearedBoard.children[b].removeEventListener(
               "click",
               fieldClickEvent
-              );
-            }
+            );
           }
+        }
         for (let a = 0; a < targetedBoardDOM.children.length; a++) {
           targetedBoardDOM.children[a].addEventListener(
             "click",
@@ -471,16 +487,13 @@ const game = (() => {
 
         player.randomAttack(targetedBoard);
 
-        //extract the below into a function
         DOMManagement.updateBoardDisplay(boardPlayerOne);
         DOMManagement.updateBoardDisplay(boardPlayerTwo);
         //console.log(targetedBoard)
         if (targetedBoard.gameOver) {
-          // removeListenersFromBoard(document.getElementById("playerTwoBoard"));
-          // removeListenersFromBoard(document.getElementById("playerOneBoard"));
           handleGameOver();
         } else {
-          //console.log('not game over choice')
+
           currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
           makeMove(currentPlayer);
         }
@@ -492,9 +505,16 @@ const game = (() => {
     makeMove(currentPlayer);
   }
 
+  //to be removed from returning after tests
+  function returnCurrentPlayer(){
+    return currentPlayer
+  }
+
+  //to be removed from returning after tests
+
   return {
     startGame,
-
+    returnCurrentPlayer,//to be removed from returning after tests
     handleGameOver //to be removed from returning after tests
   };
 })();
@@ -512,12 +532,12 @@ const DOMManagement = (() => {
 
   const computerPlayButton = document.getElementById("computer-play-button");
   //console.log(computerPlayButton)
-  computerPlayButton.addEventListener("click", ()=>{
+  computerPlayButton.addEventListener("click", () => {
     setUpBoardsAndStartGame()
     computerPlayButton.remove()
   });
 
-  function setUpBoardsAndStartGame(){
+  function setUpBoardsAndStartGame() {
     displayBoard("player-one-area", "playerOneBoard");
     displayBoard("player-two-area", "playerTwoBoard");
     //document.getElementById("centered-button-container").remove();
@@ -585,7 +605,7 @@ const DOMManagement = (() => {
     attacker.attackBoard(targetedBoard, targetedX, targetedY);
   }
 
-  function displayGameOverContent(winner){
+  function displayGameOverContent(winner) {
     let message = document.createElement('h3')
     message.innerText = `${winner} is the winner!`//what about a tie?
     document.getElementById("game-area-container").appendChild(message)
@@ -596,7 +616,7 @@ const DOMManagement = (() => {
     restartButton.innerText = "RESTART"
     document.getElementById("game-area-container").appendChild(restartButton)
 
-    restartButton.addEventListener('click', ()=>{
+    restartButton.addEventListener('click', () => {
       removeAllChildren(document.getElementById('player-one-area'))
       removeAllChildren(document.getElementById('player-two-area'))
       setUpBoardsAndStartGame()
@@ -614,20 +634,15 @@ const DOMManagement = (() => {
   };
 })();
 
-//Create boards for both players
-//randomly put correct number of ships on board
-//they cannot touch
-
-//!!! fields around sunk ship should count as hit
-
-//players take turns
-
-//wiktory
 
 
 module.exports = { Ship, Gameboard, findField, Player, game };
 
 
-function stopGame(){
+function stopGame() {
   game.handleGameOver()
+}
+
+function testRandomAttack(){
+  game.returnCurrentPlayer().guidedAttack() //get the board variable to target and then go step by step
 }
