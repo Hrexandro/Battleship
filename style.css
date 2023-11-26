@@ -21,6 +21,7 @@ body {
     text-align: center;
 }
 
+
 #computer-play-button {
     margin: auto
 }
@@ -29,6 +30,7 @@ body {
     padding-top: 10vh;
     padding-right: 0;
     padding-left: 0;
+    text-align: center;
 }
 
 .board-container {
