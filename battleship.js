@@ -13,18 +13,15 @@
 // Create conditions so that the game ends once one player’s ships have all been sunk.
 // This function is appropriate for the Game module.
 
-//add random ship placement - placeShipRandomly do this
+
 //add manual ship placement
 //put pointer cursor when on shootable field
 
-//PROCEED WITH DIRECTIONAL PLACEMENT
 
-//BUG:
-//"restarting due to placement error" until call stack exceeded - do something to avoid that
 
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
-
+let globalTargetBoard = null //to be deleted
 
 
 function Ship(length = 1) {
@@ -382,12 +379,38 @@ function Player(type = "human", designation = null) {
       }
     },
     guidedAttack(board) {
-      let fieldsNotAttackedYet = board.fields.filter((f) => f.hit === false);
+      //let fieldsNotAttackedYet = board.fields.filter((f) => f.hit === false);
 
-      let fieldsaAdjacentToHitFields = board.fields.forEach((f) => {
-        console.log(f)
+      let fieldsAdjacentToHitFields = []
+
+      board.fields.forEach((f) => {
+        //board.applyFunctionToSurroundingFields(/*function, fieldCoord*/)
+
+        // let Xup = null;
+        // let Xdown = null;
+        // let Yup = null;
+        // let Ydown = null;
+
+        // function defineDirectionalVariables() {
+        //   Xup = letters[letters.findIndex((e) => e === f.X) + 1];
+        //   Xdown = letters[letters.findIndex((e) => e === f.X) - 1];
+        //   Yup = f.Y + 1;
+        //   Ydown = f.Y - 1;
+        // }
+        function addToFieldsAdjacentToHitFields(x, y){
+          fieldsAdjacentToHitFields.push([x, y])
+        }
+
+        if (f.hit) {
+          board.applyFunctionToSurroundingFields(addToFieldsAdjacentToHitFields, [f.X, f.Y])
+        }
+
+        // console.log(f)
+        // console.log(f.X)
+        // console.log(f.Y)
       })
-
+      console.log(fieldsAdjacentToHitFields)
+      return fieldsAdjacentToHitFields
       //Gameboard.applyFunctionToSurroundingFields()
 
       //extract all fields surrounding hit fields that are not hit themselves
@@ -430,6 +453,7 @@ const game = (() => {
     verifiedBoardState = boardPlayerOne;
 
     let boardPlayerTwo = Gameboard(playerTwo, false); //second argument is visibility
+    globalTargetBoard = boardPlayerTwo //to be deleted after finishing
     placeShipsOnBoard(boardPlayerTwo, 4)
 
     DOMManagement.updateBoardDisplay(boardPlayerOne);
@@ -643,6 +667,8 @@ function stopGame() {
   game.handleGameOver()
 }
 
-function testRandomAttack(){
-  game.returnCurrentPlayer().guidedAttack() //get the board variable to target and then go step by step
+
+//globalTargetBoard
+function testGuidedAttack(){
+  game.returnCurrentPlayer().guidedAttack(globalTargetBoard) //get the board variable to target and then go step by step
 }
