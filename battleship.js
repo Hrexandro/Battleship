@@ -18,7 +18,7 @@
 //put pointer cursor when on shootable field
 
 //PROCEED WITH DIRECTIONAL PLACEMENT
-
+let testedBoard = null //remove later
 //BUG:
 //"restarting due to placement error" until call stack exceeded - do something to avoid that
 
@@ -381,15 +381,29 @@ function Player(type = "human", designation = null) {
         return;
       }
     },
-    guidedAttack(board) {
+    guidedAttack(board) {//DOING THIS CURRENTLY
+      console.log(board)
       let fieldsNotAttackedYet = board.fields.filter((f) => f.hit === false);
 
-      let fieldsaAdjacentToHitFields = board.fields.forEach((f) => {
+      function checkIfFieldIsHit(field){
+        if (field.hit){
+          return true
+        }
+
+      }
+      let fieldsaAdjacentToHitFields = []
+      
+      board.fields.forEach((f) => {
         console.log(f)
+
+        if(board.applyFunctionToSurroundingFields(checkIfFieldIsHit, f.X, f.Y)){
+          fieldsaAdjacentToHitFields.push(f)
+        }
       })
+      console.log(fieldsaAdjacentToHitFields)
 
       //Gameboard.applyFunctionToSurroundingFields()
-
+//applyFunctionToSurroundingFields(hitSurroundingFields, [fieldsContainingSunkShip[a].X, fieldsContainingSunkShip[a].Y])
       //extract all fields surrounding hit fields that are not hit themselves
       //if any of those is in a straight line, add them to list of targets
       //make sure any near fields not in a straight line are not in the list of targets//add to FORBIDDEN LIST
@@ -431,7 +445,10 @@ const game = (() => {
 
     let boardPlayerTwo = Gameboard(playerTwo, false); //second argument is visibility
     placeShipsOnBoard(boardPlayerTwo, 4)
-
+    ////////////////////////////////////////////////////////////////////////
+    testedBoard = boardPlayerTwo
+    console.log(testedBoard)
+    ////////////////////////////////////////////////////////////////////////
     DOMManagement.updateBoardDisplay(boardPlayerOne);
     DOMManagement.updateBoardDisplay(boardPlayerTwo);
 
@@ -644,5 +661,5 @@ function stopGame() {
 }
 
 function testRandomAttack(){
-  game.returnCurrentPlayer().guidedAttack() //get the board variable to target and then go step by step
+  game.returnCurrentPlayer().guidedAttack(testedBoard) //get the board variable to target and then go step by step
 }
