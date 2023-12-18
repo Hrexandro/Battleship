@@ -383,25 +383,42 @@ function Player(type = "human", designation = null) {
       }
     },
     guidedAttack(board) {//DOING THIS CURRENTLY
-      console.log(board)
+      //console.log(board)
       let fieldsNotAttackedYet = board.fields.filter((f) => f.hit === false);
 
-      function checkIfFieldIsHit(field){
+      function checkIfFieldIsHit(X, Y){//duplicated?
+        console.log(X + Y)//-1
+        let field = findField(X, Y, board)
+        console.log(field)
         if (field.hit){
-          return true
+          fieldsaAdjacentToHitFields.push(field)
         }
 
       }
       let fieldsaAdjacentToHitFields = []
       
       board.fields.forEach((f) => {
-        console.log(f)
+        //console.log(f)
+        board.applyFunctionToSurroundingFields(checkIfFieldIsHit, f.X, f.Y)
 
-        if(board.applyFunctionToSurroundingFields(checkIfFieldIsHit, f.X, f.Y)){
-          fieldsaAdjacentToHitFields.push(f)
-        }
       })
       console.log(fieldsaAdjacentToHitFields)
+
+      //example of applyFunctionToSurroundingFields use:
+      // function blockSurroundingFields(current, Xmodifier, Ymodifier) {
+      //   let XtoBeBlocked =
+      //     letters[letters.findIndex((e) => e === current[0]) + Xmodifier];
+      //   if (XtoBeBlocked) {
+      //     let YtoBeBlocked = current[1] + Ymodifier;
+
+      //     if (YtoBeBlocked < 11 && YtoBeBlocked > 0) {
+      //       findField(XtoBeBlocked, YtoBeBlocked, board).blocked = true;
+      //     }
+      //   }
+      // }
+
+      // function findField(coordX, coordY, board) {
+
       //Gameboard.applyFunctionToSurroundingFields()
 //applyFunctionToSurroundingFields(hitSurroundingFields, [fieldsContainingSunkShip[a].X, fieldsContainingSunkShip[a].Y])
       //extract all fields surrounding hit fields that are not hit themselves
