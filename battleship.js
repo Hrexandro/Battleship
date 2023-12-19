@@ -1,31 +1,4 @@
-// Create the main game loop and a module for DOM interaction.
-// At this point it is appropriate to begin crafting your User Interface.
-// The game loop should set up a new game by creating Players and Gameboards.
-// For now just populate each Gameboard with predetermined coordinates.
-// You can implement a system for allowing players to place their ships later.
-// We’ll leave the HTML implementation up to you for now, but you should display both the player’s
-// boards and render them using information from the Gameboard class.
-// You need methods to render the gameboards and to take user input for attacking.
-// For attacks, let the user click on a coordinate in the enemy Gameboard.
-// The game loop should step through the game turn by turn using only methods from other objects.
-// If at any point you are tempted to write a new function inside the game loop,
-//step back and figure out which class or module that function should belong to.
-// Create conditions so that the game ends once one player’s ships have all been sunk.
-// This function is appropriate for the Game module.
-
-
-//add manual ship placement
-//put pointer cursor when on shootable field
-
-//PROCEED WITH DIRECTIONAL PLACEMENT
-let testedBoard = null //remove later
-//BUG:
-//"restarting due to placement error" until call stack exceeded - do something to avoid that
-
-
 let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-
-let globalTargetBoard = null //to be deleted
 
 
 function Ship(length = 1) {
@@ -357,7 +330,6 @@ function findField(coordX, coordY, board) {
 }
 
 function Player(type = "human", designation = null) {
-  //later add intelligent target picking, i.e. try to find rest of fields taken by already hit ship
   return {
     type,
     designation,
@@ -382,35 +354,6 @@ function Player(type = "human", designation = null) {
         return;
       }
     },
-    guidedAttack(board) {//DOING THIS CURRENTLY
-      console.log(board)
-      let fieldsNotAttackedYet = board.fields.filter((f) => f.hit === false);
-
-      function checkIfFieldIsHit(field){
-        if (field.hit){
-          return true
-        }
-
-      }
-      let fieldsaAdjacentToHitFields = []
-      
-      board.fields.forEach((f) => {
-        console.log(f)
-
-        if(board.applyFunctionToSurroundingFields(checkIfFieldIsHit, f.X, f.Y)){
-          fieldsaAdjacentToHitFields.push(f)
-        }
-      })
-      console.log(fieldsaAdjacentToHitFields)
-      //Gameboard.applyFunctionToSurroundingFields()
-//applyFunctionToSurroundingFields(hitSurroundingFields, [fieldsContainingSunkShip[a].X, fieldsContainingSunkShip[a].Y])
-      //extract all fields surrounding hit fields that are not hit themselves
-      //if any of those is in a straight line, add them to list of targets
-      //make sure any near fields not in a straight line are not in the list of targets//add to FORBIDDEN LIST
-      //if no other field is available, shoot a random field that is not on the FORBIDDEN LIST
-
-
-    }
   };
 }
 
@@ -444,7 +387,6 @@ const game = (() => {
     verifiedBoardState = boardPlayerOne;
 
     let boardPlayerTwo = Gameboard(playerTwo, false); //second argument is visibility
-    globalTargetBoard = boardPlayerTwo //to be deleted after finishing
     placeShipsOnBoard(boardPlayerTwo, 4)
     DOMManagement.updateBoardDisplay(boardPlayerOne);
     DOMManagement.updateBoardDisplay(boardPlayerTwo);
@@ -496,14 +438,14 @@ const game = (() => {
           );
         }
       } else if (player.type === "computer") {
-        //let targetedBoardDOM = document.getElementById("playerOneBoard")//fix in case of two humans
+        //fix in case of two humans
         let targetedBoard = boardPlayerOne;
 
         player.randomAttack(targetedBoard);
 
         DOMManagement.updateBoardDisplay(boardPlayerOne);
         DOMManagement.updateBoardDisplay(boardPlayerTwo);
-        //console.log(targetedBoard)
+
         if (targetedBoard.gameOver) {
           handleGameOver();
         } else {
@@ -512,24 +454,16 @@ const game = (() => {
           makeMove(currentPlayer);
         }
       }
-      //stop making moves if game has ended
+
     }
 
     currentPlayer = playerOne;
     makeMove(currentPlayer);
   }
 
-  //to be removed from returning after tests
-  function returnCurrentPlayer(){
-    return currentPlayer
-  }
-
-  //to be removed from returning after tests
 
   return {
     startGame,
-    returnCurrentPlayer,//to be removed from returning after tests
-    handleGameOver //to be removed from returning after tests
   };
 })();
 
@@ -545,7 +479,7 @@ const DOMManagement = (() => {
   }
 
   const computerPlayButton = document.getElementById("computer-play-button");
-  //console.log(computerPlayButton)
+
   computerPlayButton.addEventListener("click", () => {
     setUpBoardsAndStartGame()
     computerPlayButton.remove()
@@ -554,7 +488,7 @@ const DOMManagement = (() => {
   function setUpBoardsAndStartGame() {
     displayBoard("player-one-area", "playerOneBoard");
     displayBoard("player-two-area", "playerTwoBoard");
-    //document.getElementById("centered-button-container").remove();
+
     game.startGame();
   }
 
@@ -565,7 +499,7 @@ const DOMManagement = (() => {
     document.getElementById(parent).appendChild(boardHeading);
 
     const boardContainer = document.createElement("div");
-    // boardContainer.classList.add('container')
+
     boardContainer.classList.add("board-container");
     boardContainer.setAttribute("id", boardName);
     document.getElementById(parent).appendChild(boardContainer);
@@ -621,7 +555,7 @@ const DOMManagement = (() => {
 
   function displayGameOverContent(winner) {
     let message = document.createElement('h3')
-    message.innerText = `${winner} is the winner!`//what about a tie?
+    message.innerText = `${winner} is the winner!`
     document.getElementById("game-area-container").appendChild(message)
 
     let restartButton = document.createElement('button')
@@ -651,15 +585,3 @@ const DOMManagement = (() => {
 
 
 module.exports = { Ship, Gameboard, findField, Player, game };
-
-
-function stopGame() {
-  game.handleGameOver()
-}
-
-
-
-//globalTargetBoard
-function testGuidedAttack(){
-  game.returnCurrentPlayer().guidedAttack(globalTargetBoard) //get the board variable to target and then go step by step
-}
